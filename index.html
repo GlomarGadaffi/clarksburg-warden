@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sentinel V11 - Web Serial SIGINT Dashboard for Uniden BCD325P2">
+  <title>SENTINEL V11 // SIGINT DASHBOARD</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- ============================================================
+         HEADER - Connection controls and status
+         ============================================================ -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="title">SENTINEL <span>V11</span></h1>
+        <div id="connection-status" class="connection-status">OFFLINE</div>
+        <div id="clock" class="clock">--:--:--</div>
+      </div>
+
+      <div class="header-right">
+        <!-- Connection Controls -->
+        <button id="btn-connect">CONNECT</button>
+        <button id="btn-disconnect" disabled>DISCONNECT</button>
+        <button id="btn-wipe" class="btn-danger">WIPE DB</button>
+
+        <!-- Kill Chain Controls -->
+        <div class="controls-section">
+          <button id="btn-hold" class="btn-action" disabled>HOLD</button>
+          <button id="btn-skip" class="btn-action" disabled>SKIP</button>
+          <button id="btn-scan" class="btn-action" disabled>SCAN</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         MAIN CONTENT - Split screen panels
+         ============================================================ -->
+    <main class="main-content">
+      <!-- LEFT PANEL: SLERS/EDACS Patch Matrix -->
+      <section class="panel panel-slers">
+        <div class="panel-header">
+          <span class="panel-title">// SLERS PATCH MATRIX</span>
+          <span class="panel-count">ENTRIES: <span id="patch-count">0</span></span>
+        </div>
+        <div class="panel-body" id="patch-matrix">
+          <div class="empty-state">NO PATCH DATA</div>
+        </div>
+      </section>
+
+      <!-- RIGHT PANEL: P25 Tactical Stream -->
+      <section class="panel panel-p25">
+        <div class="panel-header">
+          <span class="panel-title">// P25 TACTICAL STREAM</span>
+          <span class="panel-count">TGIDS: <span id="tgid-count">0</span></span>
+        </div>
+        <div class="panel-body" id="tactical-stream">
+          <div class="empty-state">NO TGID DATA</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============================================================
+         FOOTER - Raw serial feed
+         ============================================================ -->
+    <footer class="footer">
+      <div class="panel-header">
+        <span class="panel-title">// RAW SERIAL FEED</span>
+      </div>
+      <div class="raw-feed" id="raw-feed"></div>
+    </footer>
+
+    <!-- Error Display Overlay -->
+    <div id="error-display" class="error-display"></div>
+  </div>
+
+  <!-- Application Entry Point -->
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
