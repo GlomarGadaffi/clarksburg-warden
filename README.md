@@ -1,4 +1,4 @@
-# BearSentinel# SENTINEL
+# BearSentinel#
 
 **Unified Intelligence Platform for BCD325P2 Scanner Monitoring**
 
