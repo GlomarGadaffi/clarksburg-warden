@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINEL // UNIFIED INTELLIGENCE PLATFORM</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-void: #030508;
+            --bg-surface: #0a0e14;
+            --bg-raised: #10151d;
+            --bg-overlay: #161c27;
+            --border: #1e2736;
+            --border-bright: #2d3a4d;
+
+            /* System Identity */
+            --slers-primary: #00d4ff;
+            --slers-dim: rgba(0, 212, 255, 0.08);
+            --slers-glow: rgba(0, 212, 255, 0.25);
+
+            --p25-primary: #ffa726;
+            --p25-dim: rgba(255, 167, 38, 0.08);
+            --p25-glow: rgba(255, 167, 38, 0.25);
+
+            /* Agency Palette */
+            --ag-fhp: #ffa726;
+            --ag-fdle: #ef5350;
+            --ag-fwc: #66bb6a;
+            --ag-loc: #42a5f5;
+            --ag-int: #ab47bc;
+            --ag-tec: #78909c;
+            --ag-unk: #546e7a;
+
+            /* Status */
+            --online: #00e676;
+            --alert: #ff1744;
+            --warn: #ffd600;
+
+            /* Type */
+            --text-hi: #eceff4;
+            --text-mid: #9aa5b4;
+            --text-lo: #4d5766;
+
+            --font-mono: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            --font-ui: 'IBM Plex Sans', -apple-system, sans-serif;
+
+            --radius: 3px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
+
+        body {
+            background: var(--bg-void);
+            color: var(--text-hi);
+            font-family: var(--font-ui);
+            height: 100vh;
+            display: grid;
+            grid-template-rows: 48px 1fr 28px;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══════════════════════════════════ HEADER ═══════════════════════════════════ */
+        header {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-mark {
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: var(--text-hi);
+            text-transform: uppercase;
+        }
+
+        .brand-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+        }
+
+        .brand-systems {
+            display: flex;
+            gap: 14px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+        }
+
+        .sys-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sys-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 1px;
+        }
+
+        .sys-tag.slers::before { background: var(--slers-primary); }
+        .sys-tag.p25::before { background: var(--p25-primary); }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .conn-indicator {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            color: var(--text-lo);
+            transition: all 0.3s;
+        }
+
+        .conn-indicator.live {
+            color: var(--online);
+            border-color: rgba(0, 230, 118, 0.3);
+            background: rgba(0, 230, 118, 0.06);
+        }
+
+        .conn-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            transition: all 0.3s;
+        }
+
+        .conn-indicator.live .conn-dot {
+            box-shadow: 0 0 6px currentColor;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hdr-btn {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.15s;
+            background: transparent;
+        }
+
+        .btn-connect {
+            border: 1px solid rgba(0, 230, 118, 0.4);
+            color: var(--online);
+        }
+        .btn-connect:hover { background: rgba(0, 230, 118, 0.1); }
+
+        .btn-disconnect {
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            color: var(--alert);
+        }
+        .btn-disconnect:hover { background: rgba(255, 23, 68, 0.1); }
+
+        .btn-wipe {
+            border: 1px solid var(--border);
+            color: var(--text-lo);
+        }
+        .btn-wipe:hover { background: rgba(255,255,255,0.05); color: var(--text-mid); }
+
+        /* ═══════════════════════════════ WORKSPACE ═══════════════════════════════ */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .panel + .panel { border-left: 1px solid var(--border); }
+
+        .panel-header {
+            padding: 0 16px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .panel-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .panel-badge {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-lo);
+            padding: 2px 8px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        /* ═══════════════════════════ SLERS PANEL ═══════════════════════════ */
+        .slers-accent { border-top: 2px solid var(--slers-primary); }
+        .slers-title-color { color: var(--slers-primary); }
+
+        .slers-body {
+            display: grid;
+            grid-template-rows: 1fr 180px;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .patch-grid {
+            padding: 12px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 10px;
+            align-content: start;
+        }
+
+        .patch-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-lo);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            line-height: 2;
+        }
+
+        .patch-empty strong {
+            color: var(--slers-primary);
+            display: block;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        /* Patch Card */
+        .patch-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--slers-primary);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.25s;
+        }
+
+        .patch-card.tx {
+            background: var(--slers-dim);
+            border-color: rgba(0, 212, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.06);
+        }
+
+        .patch-card-head {
+            padding: 7px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.25);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .patch-id-label { color: var(--slers-primary); }
+
+        .patch-hits {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-lo);
+            background: rgba(255,255,255,0.05);
+            padding: 1px 6px;
+            border-radius: 2px;
+        }
+
+        .patch-members { padding: 6px 10px; }
+
+        .member-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 0;
+            font-size: 11px;
+            border-left: 2px solid var(--ag-unk);
+            padding-left: 8px;
+            margin-bottom: 2px;
+        }
+
+        .member-row.ag-FHP { border-left-color: var(--ag-fhp); }
+        .member-row.ag-FDLE { border-left-color: var(--ag-fdle); }
+        .member-row.ag-FWC { border-left-color: var(--ag-fwc); }
+        .member-row.ag-LOC { border-left-color: var(--ag-loc); }
+        .member-row.ag-INT { border-left-color: var(--ag-int); }
+        .member-row.ag-TEC { border-left-color: var(--ag-tec); }
+
+        .member-id {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-lo);
+            min-width: 40px;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: var(--text-hi);
+            font-size: 11px;
+        }
+
+        .patch-footer {
+            padding: 5px 10px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-lo);
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+
+        /* Tally Section */
+        .tally-section {
+            border-top: 1px solid var(--border);
+            background: var(--bg-surface);
+            overflow-y: auto;
+            padding: 8px 12px;
+        }
+
+        .tally-head {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--text-lo);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .tally-cols {
+            display: flex;
+            gap: 12px;
+            font-size: 8px;
+            color: var(--text-lo);
+        }
+
+        .tally-cols span { width: 32px; text-align: right; }
+
+        .tally-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 0;
+            font-size: 10px;
+            font-family: var(--font-mono);
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .tally-row:hover { background: rgba(255,255,255,0.02); }
+
+        .tally-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
+        }
+
+        .tally-pip {
+            width: 3px;
+            height: 12px;
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+
+        .tally-id { color: var(--text-hi); font-weight: 600; min-width: 42px; }
+        .tally-name { color: var(--text-lo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .tally-counts {
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .tally-counts span {
+            width: 32px;
+            text-align: right;
+            color: var(--slers-primary);
+            font-weight: 500;
+        }
+
+        .tally-counts span:last-child { color: var(--text-lo); }
+
+        /* ═══════════════════════════ P25 PANEL ═══════════════════════════ */
+        .p25-accent { border-top: 2px solid var(--p25-primary); }
+        .p25-title-color { color: var(--p25-primary); }
+
+        .p25-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        /* LCD */
+        .lcd {
+            background: #000;
+            margin: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            text-align: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .lcd-tgid {
+            font-family: var(--font-mono);
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--p25-primary);
+            text-shadow: 0 0 15px var(--p25-glow);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .lcd-name {
+            font-family: var(--font-ui);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-hi);
+            margin-bottom: 2px;
+        }
+
+        .lcd-agency {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-lo);
+            letter-spacing: 1px;
+        }
+
+        .lcd-state {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-lo);
+            transition: all 0.15s;
+        }
+
+        .lcd-state.scanning { color: var(--text-lo); }
+
+        .lcd-state.skipping {
+            color: var(--alert);
+            animation: blink-fast 0.2s infinite;
+        }
+
+        .lcd-state.holding {
+            color: var(--alert);
+            border: 1px solid var(--alert);
+            padding: 2px 6px;
+            border-radius: 2px;
+        }
+
+        /* P25 Grid */
+        .tac-grid-header {
+            padding: 4px 16px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-lo);
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .tac-grid {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 12px 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 8px;
+            align-content: start;
+        }
+
+        /* TG Card */
+        .tg-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--ag-unk);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .tg-card:hover { background: var(--bg-overlay); }
+
+        .tg-card.active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border-color: rgba(255, 167, 38, 0.3);
+            background: var(--p25-dim);
+        }
+
+        .tg-card.holding {
+            border-color: var(--alert) !important;
+            border-left-color: var(--alert) !important;
+            background: rgba(255, 23, 68, 0.08);
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.15);
+            animation: hold-pulse 2.5s infinite;
+        }
+
+        .tg-card.discovery {
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+        }
+
+        .tg-card.ag-FHP { border-left-color: var(--ag-fhp); }
+        .tg-card.ag-FDLE { border-left-color: var(--ag-fdle); }
+        .tg-card.ag-FWC { border-left-color: var(--ag-fwc); }
+        .tg-card.ag-LOC { border-left-color: var(--ag-loc); }
+        .tg-card.ag-INT { border-left-color: var(--ag-int); }
+        .tg-card.ag-TEC { border-left-color: var(--ag-tec); }
+
+        .tg-head {
+            padding: 6px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .tg-head-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-new {
+            font-size: 8px;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 2px;
+            background: var(--slers-primary);
+            color: #000;
+            letter-spacing: 0.5px;
+            animation: flash-badge 1.2s infinite;
+        }
+
+        .badge-hold {
+            font-size: 8px;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 2px;
+            background: var(--alert);
+            color: #fff;
+            letter-spacing: 0.5px;
+            display: none;
+        }
+
+        .tg-card.holding .badge-hold { display: inline-block; }
+
+        .badge-hits {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-lo);
+            background: rgba(255,255,255,0.05);
+            padding: 1px 6px;
+            border-radius: 2px;
+        }
+
+        .tg-body { padding: 8px 10px; }
+
+        .tg-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-hi);
+            margin-bottom: 3px;
+        }
+
+        .tg-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: var(--text-lo);
+        }
+
+        .tg-footer {
+            padding: 4px 10px 6px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-lo);
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .tg-footer b { color: var(--text-mid); }
+
+        /* ═══════════════════════════ STATUS BAR ═══════════════════════════ */
+        .status-bar {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-lo);
+            letter-spacing: 0.5px;
+        }
+
+        .status-bar-left, .status-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-item { display: flex; align-items: center; gap: 4px; }
+        .stat-label { opacity: 0.6; }
+        .stat-val { color: var(--text-mid); }
+
+        /* ═══════════════════════════ ANIMATIONS ═══════════════════════════ */
+        @keyframes blink-fast { 50% { opacity: 0; } }
+
+        @keyframes hold-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0.3); }
+            70% { box-shadow: 0 0 0 8px rgba(255, 23, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0); }
+        }
+
+        @keyframes flash-badge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes card-in {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-enter { animation: card-in 0.2s ease-out; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <span class="brand-mark">Sentinel</span>
+            <div class="brand-divider"></div>
+            <div class="brand-systems">
+                <span class="sys-tag slers">SLERS / EDACS</span>
+                <span class="sys-tag p25">ALACHUA / P25</span>
+            </div>
+        </div>
+        <div class="header-controls">
+            <div class="conn-indicator" id="connInd">
+                <span class="conn-dot"></span>
+                <span id="connLabel">OFFLINE</span>
+            </div>
+            <button class="hdr-btn btn-connect" onclick="S.connect()">Connect USB</button>
+            <button class="hdr-btn btn-disconnect" onclick="S.disconnect()">Disconnect</button>
+            <button class="hdr-btn btn-wipe" onclick="S.wipeDB()">Wipe DB</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+
+        <!-- ═══ SLERS PANEL ═══ -->
+        <div class="panel slers-accent">
+            <div class="panel-header">
+                <span class="panel-title slers-title-color">SLERS Patch Matrix</span>
+                <span class="panel-badge" id="slersSite">AWAITING C-CH</span>
+            </div>
+            <div class="slers-body">
+                <div class="patch-grid" id="patchGrid">
+                    <div class="patch-empty">
+                        <strong>Listening for EDW Control Stream</strong>
+                        Enable "C-CH Output" in Scanner Settings
+                    </div>
+                </div>
+                <div class="tally-section">
+                    <div class="tally-head">
+                        <span>Talkgroup Leaderboard</span>
+                        <div class="tally-cols"><span>5m</span><span>60m</span></div>
+                    </div>
+                    <div id="tallyList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ P25 PANEL ═══ -->
+        <div class="panel p25-accent">
+            <div class="panel-header">
+                <span class="panel-title p25-title-color">Alachua County P25</span>
+                <span class="panel-badge" id="tgCount">0 Active</span>
+            </div>
+            <div class="p25-body">
+                <div class="lcd">
+                    <span class="lcd-state scanning" id="lcdState">SCANNING</span>
+                    <div class="lcd-tgid" id="lcdTGID">---</div>
+                    <div class="lcd-name" id="lcdName">System Standby</div>
+                    <div class="lcd-agency" id="lcdAgency">--</div>
+                </div>
+                <div class="tac-grid-header">
+                    <span>Tactical Grid &mdash; Click to Hold</span>
+                    <span id="tgActiveLabel">0 Active</span>
+                </div>
+                <div class="tac-grid" id="tacGrid"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="stat-item"><span class="stat-label">SLERS PATCHES:</span> <span class="stat-val" id="statPatches">0</span></div>
+            <div class="stat-item"><span class="stat-label">P25 SESSION:</span> <span class="stat-val" id="statP25Session">0</span></div>
+            <div class="stat-item"><span class="stat-label">P25 ALL-TIME:</span> <span class="stat-val" id="statP25Total">0</span></div>
+        </div>
+        <div class="status-bar-right">
+            <div class="stat-item"><span class="stat-label">POLL:</span> <span class="stat-val">150ms</span></div>
+            <div class="stat-item"><span class="stat-label">BAUD:</span> <span class="stat-val">115200</span></div>
+            <span id="clockDisplay">--:--:--</span>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════
+        //  AGENCY DATABASE — Full Florida SLERS + Alachua P25 Talkgroup Map
+        // ═══════════════════════════════════════════════════════════════════════
+        const DB = {
+            // --- INTERAGENCY / STATEWIDE (INT) ---
+            "11": { a: "INT", n: "IA-11 Pensacola & Tallahassee" },
+            "12": { a: "INT", n: "IA-12 Pensacola & Tallahassee" },
+            "13": { a: "INT", n: "IA-13 Pensacola & Tallahassee" },
+            "14": { a: "INT", n: "IA-14 Pensacola & Tallahassee" },
+            "21": { a: "INT", n: "IA-21 Lake City & Jax" },
+            "22": { a: "INT", n: "IA-22 Lake City & Jax" },
+            "23": { a: "INT", n: "IA-23 Lake City & Jax" },
+            "24": { a: "INT", n: "IA-24 Lake City & Jax" },
+            "31": { a: "INT", n: "IA-31 Orlando" },
+            "32": { a: "INT", n: "IA-32 Orlando" },
+            "33": { a: "INT", n: "IA-33 Orlando" },
+            "34": { a: "INT", n: "IA-34 Orlando" },
+            "41": { a: "INT", n: "IA-41 West Palm Beach" },
+            "42": { a: "INT", n: "IA-42 West Palm Beach" },
+            "43": { a: "INT", n: "IA-43 West Palm Beach" },
+            "44": { a: "INT", n: "IA-44 West Palm Beach" },
+            "51": { a: "INT", n: "IA-51 Miami & Key West" },
+            "52": { a: "INT", n: "IA-52 Miami & Key West" },
+            "53": { a: "INT", n: "IA-53 Miami & Key West" },
+            "54": { a: "INT", n: "IA-54 Miami & Key West" },
+            "61": { a: "INT", n: "IA-61 Fort Myers" },
+            "62": { a: "INT", n: "IA-62 Fort Myers" },
+            "63": { a: "INT", n: "IA-63 Fort Myers" },
+            "64": { a: "INT", n: "IA-64 Fort Myers" },
+            "71": { a: "INT", n: "IA-71 Tampa" },
+            "72": { a: "INT", n: "IA-72 Tampa" },
+            "73": { a: "INT", n: "IA-73 Tampa" },
+            "74": { a: "INT", n: "IA-74 Tampa" },
+            "81": { a: "INT", n: "Statewide 81 (Common)" },
+            "82": { a: "INT", n: "Statewide 82 (Common)" },
+            "83": { a: "INT", n: "Statewide 83 (Common)" },
+            "84": { a: "INT", n: "Statewide 84 (Common)" },
+            "220": { a: "INT", n: "IA-FTM61 Law Talk" },
+            "221": { a: "INT", n: "IA-FTM62 Law Talk" },
+            "222": { a: "INT", n: "IA-FTM63 Law Talk" },
+            "223": { a: "INT", n: "IA-FTM64 Law Talk" },
+            "1185": { a: "INT", n: "US Marshal JTF Ops-5" },
+            // --- FHP TROOP A (Pensacola) ---
+            "801": { a: "FHP", n: "Troop A Dispatch (Pensacola)" },
+            "802": { a: "FHP", n: "Troop A Law Tac" },
+            "805": { a: "FHP", n: "Pensacola Patrol-2" },
+            "832": { a: "FHP", n: "Troop A Law Tac" },
+            "833": { a: "FHP", n: "Troop A Law Tac" },
+            "835": { a: "FHP", n: "Troop A Law Tac" },
+            "836": { a: "FHP", n: "Troop A Law Tac" },
+            "869": { a: "FHP", n: "Troop A Law Tac" },
+            "891": { a: "FHP", n: "Troop A Law Tac" },
+            "899": { a: "FHP", n: "Troop A Law Tac" },
+            // --- FHP TROOP B (Lake City) ---
+            "78": { a: "FHP", n: "Troop B Patch/Talk" },
+            "1058": { a: "FHP", n: "Troop B Law Tac" },
+            "1089": { a: "FHP", n: "Troop B Dispatch" },
+            "1138": { a: "FHP", n: "Troop B Air" },
+            "1154": { a: "FHP", n: "Troop B/C Mutual Aid" },
+            // --- FHP TROOP C (Tampa/Lakeland) ---
+            "35": { a: "FHP", n: "Troop C Patch" },
+            "250": { a: "FHP", n: "Troop C Law Talk" },
+            "289": { a: "FHP", n: "Brooksville PTL-1" },
+            "290": { a: "FHP", n: "Brooksville PTL-2" },
+            "317": { a: "FHP", n: "Troop C Law Talk" },
+            "353": { a: "FHP", n: "Sarasota PTL-1" },
+            "354": { a: "FHP", n: "Sarasota PTL-2" },
+            "355": { a: "FHP", n: "Bradenton PTL-1" },
+            "356": { a: "FHP", n: "Bradenton PTL-2" },
+            "577": { a: "FHP", n: "Tampa Law Tac" },
+            "582": { a: "FHP", n: "FHP Air (Tampa)" },
+            "609": { a: "FHP", n: "Tampa Dispatch" },
+            "610": { a: "FHP", n: "Lakeland PTL-2" },
+            "752": { a: "FHP", n: "Troop C Law Talk" },
+            // --- FHP TROOP D/K (Orlando/Turnpike) ---
+            "230": { a: "FHP", n: "Turnpike (Lake Worth) Patch" },
+            "231": { a: "FHP", n: "Turnpike (Lake Worth) Talk" },
+            "249": { a: "FHP", n: "FHP 249 Law Talk" },
+            "554": { a: "FHP", n: "Orlando PTL-1" },
+            "555": { a: "FHP", n: "Orlando PTL-2" },
+            "556": { a: "FHP", n: "Orlando Special Detail" },
+            "557": { a: "FHP", n: "Orlando Traffic Homicide" },
+            "1352": { a: "FHP", n: "Turnpike (Wildwood) CVE" },
+            "1830": { a: "FHP", n: "Turnpike (Wildwood) Disp" },
+            // --- FWC (Fish & Wildlife) ---
+            "171": { a: "FWC", n: "Ocala Patch/Talk" },
+            "296": { a: "FWC", n: "Wildlife Ops 4" },
+            "297": { a: "FWC", n: "Wildlife Ops SAT" },
+            "298": { a: "FWC", n: "Wildlife Ops LEOW" },
+            "299": { a: "FWC", n: "Wildlife Ops 1" },
+            "300": { a: "FWC", n: "Wildlife Ops 2" },
+            "306": { a: "FWC", n: "Wildlife Ops Tampa" },
+            "1251": { a: "FWC", n: "Ocala Region Tac" },
+            "1377": { a: "FWC", n: "Ocala Region Tac" },
+            "1426": { a: "FWC", n: "Ocala Dispatch" },
+            // --- FDLE ---
+            "34921": { a: "FDLE", n: "Intel Ops 1" },
+            "35066": { a: "FDLE", n: "Emerg Mgmt Dispatch" },
+            "35161": { a: "FDLE", n: "Intel Ops Tac" },
+            "35449": { a: "FDLE", n: "Fire Marshal Disp" },
+            "35578": { a: "FDLE", n: "Intel Ops Disp" },
+            "35891": { a: "FDLE", n: "Intel Ops Tac" },
+            // --- LOCAL AGENCIES (LOC) ---
+            "36617": { a: "LOC", n: "Franklin SO Dispatch" },
+            "36673": { a: "LOC", n: "Franklin EMS Dispatch" },
+            "36674": { a: "LOC", n: "Weems Memorial Hosp" },
+            "1300": { a: "LOC", n: "Walton Common (MA)" },
+            "20753": { a: "LOC", n: "North Walton Fire Disp" },
+            "20769": { a: "LOC", n: "South Walton Fire Disp" },
+            "20801": { a: "LOC", n: "Walton EOC" },
+            "20865": { a: "LOC", n: "Walton SO N. Disp" },
+            "20866": { a: "LOC", n: "Walton SO S. Disp" },
+            "20913": { a: "LOC", n: "Defuniak PD Patrol" },
+            "21025": { a: "LOC", n: "Okeechobee SO Disp" },
+            "21057": { a: "LOC", n: "Okeechobee Fire Disp" },
+            "21089": { a: "LOC", n: "Okeechobee PD Disp" },
+            "21127": { a: "LOC", n: "Okeechobee EOC" },
+            "20241": { a: "LOC", n: "Levy SO Dispatch" },
+            "20257": { a: "LOC", n: "Levy Fire Dispatch" },
+            "1538": { a: "LOC", n: "Bradford SO Dispatch" },
+            "36257": { a: "LOC", n: "Air Methods (AirCom)" },
+            "36110": { a: "LOC", n: "DBS School Buses" },
+            // --- RADIO TECHS / PUBLIC WORKS (TEC) ---
+            "27": { a: "TEC", n: "Microwave/NOC 1" },
+            "75": { a: "TEC", n: "MA/COM 1" },
+            "76": { a: "TEC", n: "MA/COM 2" },
+            "945": { a: "TEC", n: "Radio Techs 945" },
+            "49937": { a: "TEC", n: "Radio Techs 937" },
+            "49945": { a: "TEC", n: "Radio Techs 945" },
+            // --- P25 ALACHUA (Overrides) ---
+            "12301": { a: "LOC", n: "ACSO Dispatch 1" },
+            "12302": { a: "LOC", n: "ACSO Dispatch 2" },
+            "12401": { a: "LOC", n: "ACFR Fire Main" },
+            "2057": { a: "LOC", n: "GPD Dispatch A" }
+        };
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  AGENCY COLOR RESOLVER
+        // ═══════════════════════════════════════════════════════════════════════
+        const AG_COLORS = {
+            FHP: '--ag-fhp', FDLE: '--ag-fdle', FWC: '--ag-fwc',
+            LOC: '--ag-loc', INT: '--ag-int', TEC: '--ag-tec'
+        };
+
+        function agColor(code) {
+            return AG_COLORS[code] || '--ag-unk';
+        }
+
+        function agClass(code) {
+            return `ag-${code || 'UNK'}`;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  SENTINEL CORE
+        // ═══════════════════════════════════════════════════════════════════════
+        const S = {
+            // Serial State
+            port: null,
+            reader: null,
+            writer: null,
+            connected: false,
+            buffer: "",
+
+            // Command Queue
+            cmdQueue: [],
+            isBusy: false,
+
+            // Intervals
+            pollInt: null,
+            tickInt: null,
+
+            // SLERS Engine
+            slers: {
+                patches: {},          // patchID -> { el, lastSeen, sessionHits }
+                tgHits: new Map()     // tgid -> { timestamps: [] } for rolling leaderboard
+            },
+
+            // P25 Engine
+            p25: {
+                lastTG: null,
+                lastTime: 0,
+                holdingTG: null,
+                history: new Map(),   // tgid -> { el, lastSeen, sessionHits, name, agency, isNew }
+                sessionTotal: 0
+            },
+
+            // Persistent Stats
+            stats: { slers: {}, p25: {} },
+            saveTimeout: null,
+
+            // ─────────────────── INIT ───────────────────
+            init() {
+                // Restore persistent hit counts
+                try {
+                    const p = localStorage.getItem('sentinel_p25');
+                    const s = localStorage.getItem('sentinel_slers');
+                    if (p) this.stats.p25 = JSON.parse(p);
+                    if (s) this.stats.slers = JSON.parse(s);
+                } catch(e) { /* fresh start */ }
+
+                document.getElementById('statP25Total').textContent = Object.values(this.stats.p25).reduce((a,b) => a+b, 0);
+
+                // Clock
+                setInterval(() => {
+                    document.getElementById('clockDisplay').textContent = new Date().toLocaleTimeString();
+                }, 1000);
+            },
+
+            // ─────────────────── CONNECTION ───────────────────
+            async connect() {
+                if (!navigator.serial) return alert("Web Serial API not available. Use Chrome/Edge.");
+                try {
+                    this.port = await navigator.serial.requestPort();
+                    await this.port.open({ baudRate: 115200 });
+                    this.writer = this.port.writable.getWriter();
+                    this.connected = true;
+                    this.updateConnUI();
+                    this.readLoop();
+                    this.startPolling();
+                } catch(e) {
+                    console.error("Connect failed:", e);
+                    this.disconnect();
+                }
+            },
+
+            async disconnect() {
+                this.connected = false;
+                this.stopPolling();
+                try {
+                    if (this.reader) await this.reader.cancel();
+                    if (this.writer) { this.writer.releaseLock(); this.writer = null; }
+                    if (this.port) { await this.port.close(); this.port = null; }
+                } catch(e) { /* cleanup */ }
+                this.updateConnUI();
+            },
+
+            updateConnUI() {
+                const ind = document.getElementById('connInd');
+                const lbl = document.getElementById('connLabel');
+                if (this.connected) {
+                    ind.classList.add('live');
+                    lbl.textContent = 'CONNECTED';
+                } else {
+                    ind.classList.remove('live');
+                    lbl.textContent = 'OFFLINE';
+                }
+            },
+
+            // ─────────────────── SERIAL I/O ───────────────────
+            async readLoop() {
+                const decoder = new TextDecoderStream();
+                this.port.readable.pipeTo(decoder.writable);
+                this.reader = decoder.readable.getReader();
+
+                try {
+                    while (true) {
+                        const { value, done } = await this.reader.read();
+                        if (done) break;
+                        if (value) this.ingest(value);
+                    }
+                } catch(e) { console.error("Read error:", e); }
+            },
+
+            ingest(chunk) {
+                this.buffer += chunk;
+                const lines = this.buffer.split(/[\r\n]+/);
+                this.buffer = lines.pop(); // keep incomplete trailing
+
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+                    this.route(trimmed);
+                }
+            },
+
+            route(line) {
+                if (line.startsWith("EDW")) {
+                    this.handleSLERS(line);
+                } else {
+                    this.handleP25(line);
+                    // Ack: free the queue for next command
+                    this.isBusy = false;
+                    this.processQueue();
+                }
+            },
+
+            // ─────────────────── COMMAND QUEUE ───────────────────
+            queueCmd(cmd) {
+                if (!this.connected) return;
+                this.cmdQueue.push(cmd);
+                this.processQueue();
+            },
+
+            async processQueue() {
+                if (this.isBusy || this.cmdQueue.length === 0 || !this.writer) return;
+                this.isBusy = true;
+                const cmd = this.cmdQueue.shift();
+                try {
+                    await this.writer.write(new TextEncoder().encode(cmd + "\r"));
+                } catch(e) {
+                    this.isBusy = false;
+                }
+            },
+
+            // ─────────────────── POLLING ───────────────────
+            startPolling() {
+                this.pollInt = setInterval(() => this.queueCmd("GLG"), 150);
+                this.tickInt = setInterval(() => this.tick(), 1000);
+            },
+
+            stopPolling() {
+                clearInterval(this.pollInt);
+                clearInterval(this.tickInt);
+            },
+
+            // ─────────────────── PERSISTENCE ───────────────────
+            saveHit(system, id) {
+                if (!this.stats[system][id]) this.stats[system][id] = 0;
+                this.stats[system][id]++;
+
+                // Debounced flush to localStorage
+                if (!this.saveTimeout) {
+                    this.saveTimeout = setTimeout(() => {
+                        localStorage.setItem('sentinel_p25', JSON.stringify(this.stats.p25));
+                        localStorage.setItem('sentinel_slers', JSON.stringify(this.stats.slers));
+                        this.saveTimeout = null;
+                    }, 5000);
+                }
+                return this.stats[system][id];
+            },
+
+            wipeDB() {
+                if (confirm("Clear all persistent hit history?")) {
+                    localStorage.removeItem('sentinel_p25');
+                    localStorage.removeItem('sentinel_slers');
+                    this.stats = { slers: {}, p25: {} };
+                    location.reload();
+                }
+            },
+
+            // ═══════════════════════════════════════════════════════════════
+            //  SLERS / EDACS ENGINE
+            // ═══════════════════════════════════════════════════════════════
+            handleSLERS(line) {
+                const sitM = line.match(/SIT-([0-9A-F]+)/);
+                if (sitM) document.getElementById('slersSite').textContent = `SITE: ${sitM[1]}`;
+
+                const patM = line.match(/PAT-([0-9A-F]+)/);
+                const memM = line.match(/MEM-([0-9A-F]+)/);
+
+                if (patM && memM) {
+                    const patchID = patM[1];
+                    const memberDec = parseInt(memM[1], 16);
+                    this.trackSLERSHit(memberDec);
+                    this.renderPatch(patchID, memberDec);
+                }
+            },
+
+            trackSLERSHit(tgid) {
+                if (!this.slers.tgHits.has(tgid)) {
+                    this.slers.tgHits.set(tgid, { timestamps: [] });
+                }
+                this.slers.tgHits.get(tgid).timestamps.push(Date.now());
+            },
+
+            renderPatch(patchID, memberID) {
+                const grid = document.getElementById('patchGrid');
+                const empty = grid.querySelector('.patch-empty');
+                if (empty) empty.remove();
+
+                const now = Date.now();
+                const totalHits = this.saveHit('slers', patchID);
+                let patch = this.slers.patches[patchID];
+
+                if (!patch) {
+                    const el = document.createElement('div');
+                    el.className = 'patch-card tx card-enter';
+                    el.id = `patch-${patchID}`;
+                    el.innerHTML = `
+                        <div class="patch-card-head">
+                            <span class="patch-id-label">PATCH ${patchID}</span>
+                            <span class="patch-hits">1 HIT</span>
+                        </div>
+                        <div class="patch-members"></div>
+                        <div class="patch-footer">
+                            <span>ALL-TIME: <b>${totalHits}</b></span>
+                            <span class="patch-age">Just now</span>
+                        </div>
+                    `;
+                    grid.prepend(el);
+                    this.slers.patches[patchID] = { el, lastSeen: now, sessionHits: 1 };
+                    patch = this.slers.patches[patchID];
+                } else {
+                    patch.lastSeen = now;
+                    patch.sessionHits++;
+                    patch.el.querySelector('.patch-hits').textContent = `${patch.sessionHits} HITS`;
+                    patch.el.querySelector('.patch-footer b').textContent = totalHits;
+                    patch.el.querySelector('.patch-age').textContent = 'Just now';
+                    patch.el.remove();
+                    grid.prepend(patch.el);
+                }
+
+                // Add member if not present
+                const memList = patch.el.querySelector('.patch-members');
+                if (!memList.querySelector(`.mem-${memberID}`)) {
+                    const info = DB[memberID] || { a: 'UNK', n: 'Unknown ID' };
+                    const row = document.createElement('div');
+                    row.className = `member-row ${agClass(info.a)} mem-${memberID}`;
+                    row.innerHTML = `
+                        <span class="member-id">${memberID}</span>
+                        <span class="member-name">${info.n}</span>
+                    `;
+                    memList.appendChild(row);
+                }
+
+                // TX flash
+                patch.el.classList.add('tx');
+                clearTimeout(patch.txTimer);
+                patch.txTimer = setTimeout(() => patch.el.classList.remove('tx'), 2000);
+
+                this.updateStatBar();
+            },
+
+            // ═══════════════════════════════════════════════════════════════
+            //  P25 ENGINE
+            // ═══════════════════════════════════════════════════════════════
+            handleP25(line) {
+                const parts = line.split(',');
+                if (parts[0] !== "GLG") return;
+
+                const tgid = parts[1];
+                if (tgid && tgid.trim() !== "") {
+                    this.handleActiveCall(tgid, parts);
+                } else {
+                    // Scanner idle / searching
+                    if (!this.p25.holdingTG) {
+                        const st = document.getElementById('lcdState');
+                        st.textContent = 'SCANNING';
+                        st.className = 'lcd-state scanning';
+                    }
+                }
+            },
+
+            handleActiveCall(tgid, parts) {
+                const now = Date.now();
+                const isNew = (tgid !== this.p25.lastTG) || (now - this.p25.lastTime > 2000);
+                if (!isNew) return;
+
+                this.p25.lastTG = tgid;
+                this.p25.lastTime = now;
+                this.p25.sessionTotal++;
+
+                // Resolve metadata
+                let name = "Unknown Channel";
+                let agency = "P25";
+                let isDiscovery = false;
+
+                if (DB[tgid]) {
+                    name = DB[tgid].n;
+                    agency = DB[tgid].a;
+                } else {
+                    isDiscovery = true;
+                    const sys = parts[5], dept = parts[6], chan = parts[7];
+                    if (chan && chan.trim()) name = chan.trim();
+                    if (dept && dept.trim()) agency = dept.trim();
+                    else if (sys && sys.trim()) agency = sys.trim();
+                }
+
+                // LCD Update
+                document.getElementById('lcdTGID').textContent = tgid;
+                document.getElementById('lcdName').textContent = name;
+                document.getElementById('lcdAgency').textContent = agency;
+
+                // Persist & render card
+                const totalHits = this.saveHit('p25', tgid);
+                if (totalHits > 1) isDiscovery = false;
+
+                this.renderTGCard(tgid, name, agency, isDiscovery, totalHits);
+
+                // SWEEP LOGIC: skip unless holding
+                if (this.p25.holdingTG === tgid) return;
+                if (this.p25.holdingTG) return; // holding different TG, don't interfere
+
+                this.cmdQueue = [];
+                this.queueCmd("KEY,S,P");
+                const st = document.getElementById('lcdState');
+                st.textContent = '>>> SKIP';
+                st.className = 'lcd-state skipping';
+
+                this.updateStatBar();
+            },
+
+            renderTGCard(tgid, name, agency, isDiscovery, totalHits) {
+                const grid = document.getElementById('tacGrid');
+                const now = Date.now();
+                let rec = this.p25.history.get(tgid);
+
+                if (!rec) {
+                    rec = { tgid, name, agency, lastSeen: now, sessionHits: 1, isNew: isDiscovery };
+                    const el = document.createElement('div');
+                    const agCls = agClass(agency.substring(0,4).toUpperCase().replace(/[^A-Z]/g,''));
+                    const discCls = isDiscovery ? 'discovery' : '';
+
+                    el.className = `tg-card active ${agCls} ${discCls} card-enter`;
+                    el.id = `tg-${tgid}`;
+                    el.onclick = () => this.toggleHold(tgid);
+                    el.innerHTML = `
+                        <div class="tg-head">
+                            <div class="tg-head-left">
+                                ${isDiscovery ? '<span class="badge-new">NEW</span>' : ''}
+                                <span class="badge-hold">HOLD</span>
+                                <span>${tgid}</span>
+                            </div>
+                            <span class="badge-hits">1 HIT</span>
+                        </div>
+                        <div class="tg-body">
+                            <div class="tg-name">${name}</div>
+                            <div class="tg-meta">
+                                <span>${agency}</span>
+                                <span class="tg-age">Just now</span>
+                            </div>
+                        </div>
+                        <div class="tg-footer">
+                            <span>TOTAL: <b>${totalHits}</b></span>
+                        </div>
+                    `;
+
+                    grid.prepend(el);
+                    rec.el = el;
+                    this.p25.history.set(tgid, rec);
+                } else {
+                    rec.lastSeen = now;
+                    rec.sessionHits++;
+                    rec.el.querySelector('.badge-hits').textContent = `${rec.sessionHits} HITS`;
+                    rec.el.querySelector('.tg-age').textContent = 'Just now';
+                    rec.el.querySelector('.tg-footer b').textContent = totalHits;
+
+                    // Re-trigger active animation
+                    rec.el.classList.remove('active');
+                    void rec.el.offsetWidth;
+                    rec.el.classList.add('active');
+
+                    // Bubble to top
+                    rec.el.remove();
+                    grid.prepend(rec.el);
+                }
+
+                this.updateHoldStyles();
+            },
+
+            // ─────────────────── TACTICAL HOLD ───────────────────
+            toggleHold(tgid) {
+                if (this.p25.holdingTG === tgid) {
+                    this.p25.holdingTG = null;
+                    this.queueCmd("KEY,S,P");
+                } else {
+                    this.p25.holdingTG = tgid;
+                    this.queueCmd("KEY,H,P");
+                }
+                this.updateHoldStyles();
+                this.updateLCDState();
+            },
+
+            updateHoldStyles() {
+                this.p25.history.forEach((rec, tgid) => {
+                    if (this.p25.holdingTG === tgid) rec.el.classList.add('holding');
+                    else rec.el.classList.remove('holding');
+                });
+            },
+
+            updateLCDState() {
+                const st = document.getElementById('lcdState');
+                if (this.p25.holdingTG) {
+                    st.textContent = 'AUDIO HOLD';
+                    st.className = 'lcd-state holding';
+                } else {
+                    st.textContent = 'SCANNING';
+                    st.className = 'lcd-state scanning';
+                }
+            },
+
+            // ─────────────────── TICK (1s housekeeping) ───────────────────
+            tick() {
+                const now = Date.now();
+
+                // --- P25 Cleanup (5m TTL) ---
+                let activeCount = 0;
+                this.p25.history.forEach((rec, tgid) => {
+                    const diff = now - rec.lastSeen;
+                    const ageEl = rec.el.querySelector('.tg-age');
+
+                    if (diff < 60000) ageEl.textContent = `${Math.floor(diff/1000)}s ago`;
+                    else ageEl.textContent = `${Math.floor(diff/60000)}m ago`;
+
+                    if (diff > 2000) rec.el.classList.remove('active');
+
+                    if (diff > 300000 && this.p25.holdingTG !== tgid) {
+                        rec.el.remove();
+                        this.p25.history.delete(tgid);
+                    } else {
+                        activeCount++;
+                    }
+                });
+
+                document.getElementById('tgCount').textContent = `${activeCount} Active`;
+                document.getElementById('tgActiveLabel').textContent = `${activeCount} Active`;
+
+                // --- SLERS Patch Cleanup (30s TTL) ---
+                Object.keys(this.slers.patches).forEach(id => {
+                    const p = this.slers.patches[id];
+                    const diff = now - p.lastSeen;
+                    const ageEl = p.el.querySelector('.patch-age');
+                    if (diff < 60000) ageEl.textContent = `${Math.floor(diff/1000)}s ago`;
+                    else ageEl.textContent = `${Math.floor(diff/60000)}m ago`;
+
+                    if (diff > 30000) {
+                        p.el.remove();
+                        delete this.slers.patches[id];
+                    }
+                });
+
+                // --- SLERS Leaderboard ---
+                this.renderLeaderboard();
+
+                // --- Status Bar ---
+                this.updateStatBar();
+            },
+
+            renderLeaderboard() {
+                const now = Date.now();
+                const rows = [];
+
+                this.slers.tgHits.forEach((data, tgid) => {
+                    const h5 = data.timestamps.filter(t => now - t < 300000).length;
+                    const h60 = data.timestamps.filter(t => now - t < 3600000).length;
+
+                    // Prune old timestamps
+                    data.timestamps = data.timestamps.filter(t => now - t < 3600000);
+
+                    if (h60 > 0) {
+                        const info = DB[tgid] || { a: 'UNK', n: 'Unknown ID' };
+                        rows.push({ id: tgid, name: info.n, agency: info.a, h5, h60 });
+                    }
+                });
+
+                rows.sort((a, b) => b.h5 - a.h5 || b.h60 - a.h60);
+
+                const list = document.getElementById('tallyList');
+                list.innerHTML = rows.slice(0, 20).map(r => `
+                    <div class="tally-row">
+                        <div class="tally-label">
+                            <div class="tally-pip" style="background:var(${agColor(r.agency)})"></div>
+                            <span class="tally-id">${r.id}</span>
+                            <span class="tally-name">${r.name}</span>
+                        </div>
+                        <div class="tally-counts">
+                            <span>${r.h5}</span>
+                            <span>${r.h60}</span>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            updateStatBar() {
+                document.getElementById('statPatches').textContent = Object.keys(this.slers.patches).length;
+                document.getElementById('statP25Session').textContent = this.p25.sessionTotal;
+                document.getElementById('statP25Total').textContent =
+                    Object.values(this.stats.p25).reduce((a,b) => a+b, 0);
+            }
+        };
+
+        // ═══ BOOT ═══
+        S.init();
+    </script>
+</body>
+</html>
