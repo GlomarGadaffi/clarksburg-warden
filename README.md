@@ -1,10 +1,10 @@
 # BearSentinel# SENTINEL
- BearSentinel doesn't decrypt or decode encrypted voice traffic on SLERS (which often uses ESK for voice encryption), but it absolutely can track and display metadata for those encrypted talkgroups via the control channel data, which remains in the clear on EDACS systems. This includes things like active talkgroup IDs, patches, member affiliations, hit counts, and activity leaderboards, even when the actual audio is inaccessible.The core purpose here is enhanced situational awareness: visualizing the "big picture" of system activity and dynamic patches across SLERS, regardless of encryption on the voice side. 
-
 
 **Unified Intelligence Platform for BCD325P2 Scanner Monitoring**
 
 A single-file, browser-based dashboard for real-time monitoring of Florida's SLERS/EDACS and Alachua County P25 trunked radio systems via USB serial. Built on the Web Serial API — no backend, no dependencies, no install.
+
+BearSentinel DOES NOT decrypt or decode encrypted voice traffic on SLERS (which often uses ESK for voice encryption), but it absolutely can track and display metadata for those encrypted talkgroups via the control channel data, which remains in the clear on EDACS systems. This includes things like active talkgroup IDs, patches, member affiliations, hit counts, and activity leaderboards, even when the actual audio is inaccessible.The core purpose here is enhanced situational awareness: visualizing the "big picture" of system activity and dynamic patches across SLERS, regardless of encryption on the voice side. 
 
 ![HTML5](https://img.shields.io/badge/HTML5-single_file-E34F26?logo=html5&logoColor=white)
 ![Web Serial](https://img.shields.io/badge/Web_Serial-API-4285F4?logo=googlechrome&logoColor=white)
