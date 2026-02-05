@@ -1,4 +1,6 @@
 # BearSentinel# SENTINEL
+ BearSentinel doesn't decrypt or decode encrypted voice traffic on SLERS (which often uses ESK for voice encryption), but it absolutely can track and display metadata for those encrypted talkgroups via the control channel data, which remains in the clear on EDACS systems. This includes things like active talkgroup IDs, patches, member affiliations, hit counts, and activity leaderboards, even when the actual audio is inaccessible.The core purpose here is enhanced situational awareness: visualizing the "big picture" of system activity and dynamic patches across SLERS, regardless of encryption on the voice side. 
+
 
 **Unified Intelligence Platform for BCD325P2 Scanner Monitoring**
 
