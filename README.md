@@ -6,23 +6,21 @@
 
 ---
 
-BearSentinel is a "zero-install", strictly client-side web application designed to interface natively with Uniden hardware (specifically the **BCD325P2**). By connecting your scanner directly to a Chrome/Edge browser via USB, BearSentinel leverages the **Web Serial API** to decode, visualize, and persist radio network telemetry directly entirely offline.
-
-## System Capabilities
-
-BearSentinel provides two distinct operational dashboards that decode two massive radio specifications active in Florida.
+The BearSentinel dashboard provides two primary operational modes designed to decode, visualize, and persist radio network telemetry directly from Uniden hardware (specifically the BCD325P2). Operating entirely offline via the Web Serial API, its main capabilities are divided into two distinct dashboards:
 
 ### 1. EDACS Exclusive Mode (SLERS)
-A dedicated mode for deeply analyzing the State of Florida **SLERS (Statewide Law Enforcement Radio System)** or any other EDACS format control channel.
-This mode natively intercepts raw `EDW` telemetry strings when the scanner's `C-CH Logging` is set to `2: Extend`.
-* **Patch Matrix (Live):** Tracks spontaneous multi-agency operational patches in real time.
-* **Live Call Feed:** Decodes Control Channel **Grants**, revealing exactly *who* is keying their radio and what Logical Channel Number (repeater slot) or Voice Channel frequency is being allocated to them, even if the voice traffic itself is encrypted!
+This mode is dedicated to deeply analyzing EDACS format control channels, such as the State of Florida's Statewide Law Enforcement Radio System (SLERS). By intercepting raw EDW telemetry strings, it provides:
+*   **Real-Time Patch Matrix:** Actively monitors and tracks spontaneous multi-agency operational patches as they occur.
+*   **Live Call Feed:** Decodes Control Channel Grants to reveal exactly who is actively keying their radio. It maps out the allocated Logical Channel Number (repeater slot) or Voice Channel frequency, an interception feature that works **even if the actual voice traffic is encrypted**.
 
 ### 2. Unified Mode (EDACS + P25 Phase I/II)
-A hybrid dashboard layout that merges EDACS Patch tracking with active P25 polling (ideal for tracking local municipal systems like the Alachua County P25 Network).
-* Uses high-speed serial GLG polling (150ms intervals) to map out scanner activity onto a visual "tactical grid".
-* Allows the user to click a talkgroup card to aggressively issue the Uniden `KEY,H,P` (Hold) command over serial, overriding the scanner's scan engine.
-* Highlights newly discovered Talkgroups during exploration.
+This hybrid dashboard merges EDACS patch tracking with active P25 network polling, which is specifically designed for monitoring local municipal systems. Its main capabilities include:
+*   **Visual Tactical Grid:** Uses high-speed serial GLG polling at 150ms intervals to continuously map scanner activity onto an interactive visual grid.
+*   **Direct Scanner Override:** Users can click on a talkgroup card directly in the dashboard to aggressively issue a "Hold" command (`KEY,H,P`) over the serial connection, allowing the dashboard to physically override the scanner's internal scan engine.
+*   **Talkgroup Discovery:** Automatically highlights newly discovered Talkgroups while exploring the radio system.
+
+### Offline Telemetry Tracking
+Beyond live visualization, the dashboard continuously persists telemetry metrics, such as **Talk Group leaderboards**. Because BearSentinel operates as a strict client-side, zero-install application, all of this data is securely written to your local browser sandbox (`localStorage`) and is **never pushed to the cloud**.
 
 ---
 
@@ -73,6 +71,3 @@ npm run build
 # The resulting standalone file will be emitted to `dist/index.html` 
 # You can manually rename and move this to replacing `BearSentinel_v2.html`
 ```
-
----
-*BearSentinel never pushes your interception data telemetry to the cloud. All persistent variables (e.g. Talk Group leaderboards) are written exclusively to `localStorage` in your local browser sandbox context.*
