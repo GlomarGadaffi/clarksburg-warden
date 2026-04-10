@@ -35,9 +35,10 @@ export class ScannerDecoder {
             const vcM = line.match(/VC-([0-9A-Fa-f]+)/);
             const uM = line.match(/U-([0-9A-Fa-f]+)|TGR-([0-9A-Fa-f]+)/);
             
-            let grantType: 'TG' | 'ICALL' | 'UNKNOWN' = 'UNKNOWN';
+            let grantType: 'TG' | 'ICALL' | 'CPT' | 'UNKNOWN' = 'UNKNOWN';
             if (line.includes("CNM") || line.includes("TG-")) grantType = 'TG';
             if (line.includes("CIP") || line.includes("CIV") || line.includes("U-")) grantType = 'ICALL';
+            if (line.includes("CPT")) grantType = 'CPT';
 
             if (tgM || chM || vcM) {
                 return {

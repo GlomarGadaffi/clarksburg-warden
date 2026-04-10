@@ -2,12 +2,25 @@
     display: flex;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+}
+
+.unified-left-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    overflow: hidden;
+    position: relative;
+}
+
+.unified-left-panel .edacs-matrix-panel {
+    border-left: none; /* It's the leftmost element now */
 }
 
 .p25-panel {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 2;
     overflow: hidden;
     position: relative;
     border-left: 1px solid var(--border);
@@ -133,3 +146,24 @@
 .tg-body { padding: 8px 10px; }
 .tg-name { font-size: 12px; font-weight: 600; color: var(--text-hi); margin-bottom: 3px; }
 .tg-meta { display: flex; justify-content: space-between; align-items: center; font-size: 9px; color: var(--text-lo); }
+
+.badge-new {
+    font-size: 8px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: var(--slers-primary);
+    color: #000;
+    letter-spacing: 0.5px;
+    animation: flash-badge 1.2s infinite;
+}
+
+.badge-hold {
+    font-size: 8px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: var(--alert);
+    color: #fff;
+    letter-spacing: 0.5px;
+}

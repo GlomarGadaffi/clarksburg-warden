@@ -15,11 +15,28 @@ export class SerialMonitor {
 
     private edacsListeners: AnyEventCallback[] = [];
     private p25Listeners: AnyEventCallback[] = [];
+    private rawListeners: ((line: string) => void)[] = [];
     private statusListeners: ((connected: boolean) => void)[] = [];
 
-    onEDACS(cb: (e: EDACSEvent) => void) { this.edacsListeners.push(cb); }
-    onP25(cb: (e: P25Event) => void) { this.p25Listeners.push(cb); }
-    onStatusChange(cb: (status: boolean) => void) { this.statusListeners.push(cb); }
+    onEDACS(cb: (e: EDACSEvent) => void) { 
+        this.edacsListeners.push(cb); 
+        return () => { this.edacsListeners = this.edacsListeners.filter(l => l !== cb); };
+    }
+    
+    onP25(cb: (e: P25Event) => void) { 
+        this.p25Listeners.push(cb); 
+        return () => { this.p25Listeners = this.p25Listeners.filter(l => l !== cb); };
+    }
+
+    onRawLine(cb: (line: string) => void) {
+        this.rawListeners.push(cb);
+        return () => { this.rawListeners = this.rawListeners.filter(l => l !== cb); };
+    }
+    
+    onStatusChange(cb: (status: boolean) => void) { 
+        this.statusListeners.push(cb); 
+        return () => { this.statusListeners = this.statusListeners.filter(l => l !== cb); };
+    }
 
     async connect() {
         try {
@@ -83,12 +100,13 @@ export class SerialMonitor {
         for (const line of lines) {
             const trimmed = line.trim();
             if (!trimmed) continue;
+            this.rawListeners.forEach(cb => cb(trimmed));
             this.route(trimmed);
         }
     }
 
     route(line: string) {
-        if (line.includes("EDW") || line.includes("SIT-") || line.includes("PAT-") || line.match(/TG-|CH-|LCN-|VC-/)) {
+        if (line.includes("EDW") || line.includes("EDN") || line.includes("SIT-") || line.includes("PAT-") || line.match(/TG-|CH-|LCN-|VC-/)) {
             const edacsEvent = ScannerDecoder.parseEDACS(line);
             if (edacsEvent) {
                 this.edacsListeners.forEach(cb => cb(edacsEvent));
