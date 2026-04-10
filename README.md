@@ -28,6 +28,17 @@ Beyond live visualization, the dashboard continuously persists telemetry metrics
 
 ---
 
+## Telemetry Exploitation
+
+BearSentinel extends beyond standard call following by weaponizing the native telemetry of the control channel infrastructure:
+
+*   **Targeted Unit Tracking:** Maps 14-bit Logical IDs (LIDs) to track specific field units as they traverse different talkgroups. If an undercover unit switches from a Dispatch channel to a secure Tactical channel, their LID travels with them, allowing the tracking of a specific radio through the intelligence matrix.
+*   **Network Stress Diagnostics:** Intercepts `SYS-BUSY` and `QUEUEDid` flags to visualize infrastructure bottlenecks and capacity failures. When a multi-million dollar dispatch system bucks under pressure during major incidents, BearSentinel audits their uptime and hardware constraints in real-time.
+*   **ESK Bypass (EDACS Security Key):** M/A-COM aggressively marketed ESK as "encrypted" control infrastructure to lock down civilian listening. Modern Uniden scanners bypass ESK natively, proving it to be little more than an obfuscation physical mask. BearSentinel streams the plaintext data through the ESK illusion natively.
+*   **Decrypted LCN Mapping:** The system never broadcasts the actual network radio frequencies over the air; it only broadcasts the arbitrary Logical Channel Numbers (LCN 1-25) abstracted from the radio template. BearSentinel aggressively captures and maps these localized abstractions instantly as voice channel drops are allocated.
+
+---
+
 ## Zero-Install Execution
 
 BearSentinel is built with **Vite + React + TypeScript** but compiled via `vite-plugin-singlefile`. This means the entirety of the styling, React framework, and application logic is bundled into one singular `.html` file without external dependency references.

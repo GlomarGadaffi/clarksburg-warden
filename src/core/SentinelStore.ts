@@ -26,6 +26,7 @@ export class SentinelStore {
     public patches: Map<string, PatchState> = new Map();
     public grants: GrantEvent[] = [];
     public p25Cards: Map<string, P25CardState> = new Map();
+    public lcnMap: Map<string, string> = new Map(); // LCN Hex -> VC Hex
     
     // Analytics
     public tgHits: Map<string, number[]> = new Map(); // SLERS hits for leaderboard
@@ -164,6 +165,11 @@ export class SentinelStore {
             const ge = e as GrantEvent;
             const tgid = ge.talkgroupId || ge.unitId;
             if (tgid) this.trackSlersHit(tgid);
+            
+            // Populate Auto-Discovered LCN Map
+            if (ge.logicalChannel && ge.voiceChannel) {
+                this.lcnMap.set(ge.logicalChannel, ge.voiceChannel);
+            }
             
             this.grants.unshift(ge);
             if (this.grants.length > 200) this.grants.pop();

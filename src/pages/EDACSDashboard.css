@@ -17,3 +17,36 @@
 .edacs-right-panel .edacs-matrix-panel {
     border-left: none; /* remove nested border */
 }
+
+.edacs-toggle-bar {
+    display: flex;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.edacs-toggle-bar button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-lo);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edacs-toggle-bar button:hover {
+    color: var(--text-mid);
+    background: rgba(255,255,255,0.02);
+}
+
+.edacs-toggle-bar button.active {
+    color: var(--slers-primary);
+    background: rgba(0, 212, 255, 0.05);
+    border-bottom: 2px solid var(--slers-primary);
+}
