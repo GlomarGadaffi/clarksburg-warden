@@ -1,0 +1,70 @@
+.app-container {
+    display: grid;
+    grid-template-rows: 48px 1fr 28px;
+    height: 100vh;
+}
+
+header {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 10;
+}
+
+.brand { display: flex; align-items: center; gap: 16px; }
+.brand-mark {
+    font-family: var(--font-mono); font-weight: 800; font-size: 13px;
+    letter-spacing: 3px; color: var(--text-hi); text-transform: uppercase;
+}
+.brand-divider { width: 1px; height: 20px; background: var(--border); }
+.brand-systems { display: flex; gap: 14px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 1.5px; }
+
+.sys-tag { display: flex; align-items: center; gap: 6px; cursor: pointer; opacity: 0.5; transition: all 0.2s;}
+.sys-tag.active { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+.sys-tag::before { content: ''; width: 6px; height: 6px; border-radius: 1px; }
+.sys-tag.slers::before { background: var(--slers-primary); }
+.sys-tag.p25::before { background: var(--p25-primary); }
+
+.header-controls { display: flex; align-items: center; gap: 10px; }
+
+.conn-indicator {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 1px;
+    padding: 4px 10px; border-radius: var(--radius); display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-lo);
+    transition: all 0.3s;
+}
+.conn-indicator.live { color: var(--online); border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.06); }
+.conn-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; transition: all 0.3s; }
+.conn-indicator.live .conn-dot { box-shadow: 0 0 6px currentColor; animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.hdr-btn {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    padding: 5px 14px; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; background: transparent;
+}
+.btn-connect { border: 1px solid rgba(0, 230, 118, 0.4); color: var(--online); }
+.btn-connect:hover { background: rgba(0, 230, 118, 0.1); }
+.btn-disconnect { border: 1px solid rgba(255, 23, 68, 0.3); color: var(--alert); }
+.btn-disconnect:hover { background: rgba(255, 23, 68, 0.1); }
+.btn-wipe { border: 1px solid var(--border); color: var(--text-lo); }
+.btn-wipe:hover { background: rgba(255,255,255,0.05); color: var(--text-mid); }
+
+.workspace {
+    display: flex; /* we'll handle layout within dashboards */
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.status-bar {
+    background: var(--bg-surface); border-top: 1px solid var(--border);
+    padding: 0 16px; display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-mono); font-size: 9px; color: var(--text-lo); letter-spacing: 0.5px;
+}
+.status-bar-left, .status-bar-right { display: flex; align-items: center; gap: 16px; }
+.stat-item { display: flex; align-items: center; gap: 4px; }
+.stat-label { opacity: 0.6; }
+.stat-val { color: var(--text-mid); }

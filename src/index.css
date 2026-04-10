@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-void: #030508;
+    --bg-surface: #0a0e14;
+    --bg-raised: #10151d;
+    --bg-overlay: #161c27;
+    --border: #1e2736;
+    --border-bright: #2d3a4d;
+
+    /* System Identity */
+    --slers-primary: #00d4ff;
+    --slers-dim: rgba(0, 212, 255, 0.08);
+    --slers-glow: rgba(0, 212, 255, 0.25);
+
+    --p25-primary: #ffa726;
+    --p25-dim: rgba(255, 167, 38, 0.08);
+    --p25-glow: rgba(255, 167, 38, 0.25);
+
+    /* Agency Palette */
+    --ag-fhp: #ffa726;
+    --ag-fdle: #ef5350;
+    --ag-fwc: #66bb6a;
+    --ag-loc: #42a5f5;
+    --ag-int: #ab47bc;
+    --ag-tec: #78909c;
+    --ag-unk: #546e7a;
+
+    /* Status */
+    --online: #00e676;
+    --alert: #ff1744;
+    --warn: #ffd600;
+
+    /* Type */
+    --text-hi: #eceff4;
+    --text-mid: #9aa5b4;
+    --text-lo: #4d5766;
+
+    --font-mono: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+    --font-ui: 'IBM Plex Sans', -apple-system, sans-serif;
+
+    --radius: 3px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
+
+body {
+    background: var(--bg-void);
+    color: var(--text-hi);
+    font-family: var(--font-ui);
+    height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Animations */
+@keyframes blink-fast { 50% { opacity: 0; } }
+
+@keyframes hold-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0.3); }
+    70% { box-shadow: 0 0 0 8px rgba(255, 23, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0); }
+}
+
+@keyframes flash-badge {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+@keyframes card-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-enter { animation: card-in 0.2s ease-out; }
