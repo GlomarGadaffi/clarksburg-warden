@@ -1,25 +1,50 @@
-This is free and unencumbered software released into the public domain.
+MIT License
 
-Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means.
+Copyright (c) 2026 GlomarGadaffi
 
-1. JURISDICTIONAL ACKNOWLEDGMENT (THE FLORIDA DISCLAIMER)
-While this software is unencumbered, the hardware it interacts with is subject to state and federal law.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Public Domain Metadata: BearSentinel is designed solely for the analysis of unencrypted Control Channel (C-CH) telemetry. It is not an interception device for private, encrypted communications.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Mobile Restrictions: Under Florida Statute 843.16, the use of this software on any radio equipment inside a motor vehicle without a valid FCC Amateur Radio license is a first-degree misdemeanor.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
-Criminal Intent: Under Florida Statute 843.167, using this software to monitor or evade law enforcement during the commission of a crime is a felony.
+---------------------------------------------------------------------------
+APPENDIX A: END-USER COMPLIANCE AND JURISDICTIONAL ADDENDUM
+---------------------------------------------------------------------------
 
-2. DEDICATION
-In jurisdictions that recognize copyright laws, the author or authors of this software dedicate any and all copyright interest in the software to the public domain. We make this dedication for the benefit of the public at large and to the detriment of our heirs and successors. We intend this dedication to be an overt act of relinquishment in perpetuity of all present and future rights to this software under copyright law.
+By executing or compiling this Software (BearSentinel), you acknowledge the 
+following legal distinctions regarding its deployment:
 
-3. ABSOLUTE RELEASE OF LIABILITY
-By using this software, you acknowledge that you are operating in a high-consequence legal environment. The authors have no control over your physical deployment, your frequency selection, or your compliance with local SIGINT laws. You agree that the authors are not responsible for any criminal charges, hardware confiscations, or civil liabilities arising from your use of this code.
+1. STRICTLY METADATA (FEDERAL COMPLIANCE)
+This Software is designed solely to parse unencrypted Control Channel (C-CH) 
+telemetry and metadata. It does not decrypt AES, DES, or any encrypted voice 
+payloads. Any attempt to modify this codebase to intercept or decrypt secure 
+communications is a violation of federal law (ECPA).
 
-4. NO WARRANTY
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+2. HARDWARE DEPLOYMENT AND MOBILE RESTRICTIONS (STATE JURISDICTION)
+The legality of utilizing BearSentinel is highly dependent on your physical 
+hardware deployment. Under specific state laws (such as Florida Statute 843.16), 
+installing or operating active radio monitoring equipment in a motor vehicle 
+is a criminal offense unless you hold a valid FCC Amateur Radio (Ham) license. 
+Operating this software to facilitate or evade detection during the commission 
+of a crime carries severe felony enhancements (e.g., F.S. 843.167). 
 
-IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. YOU RUN THIS AT YOUR OWN APPARENT LEGAL RISK.
-
-For more information on the base license, please refer to https://unlicense.org
+3. ABSOLUTE INDEMNIFICATION
+The author(s) provide this codebase strictly for educational and diagnostic 
+purposes. The author(s) have no control over your physical deployment, radio 
+hardware, or local jurisdiction. By using this Software, you agree to entirely 
+indemnify and hold harmless the author(s) from any criminal charges, civil 
+liabilities, hardware confiscation, or legal action resulting from your use 
+or misuse of the Software.
