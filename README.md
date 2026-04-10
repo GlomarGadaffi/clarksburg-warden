@@ -86,3 +86,8 @@ npm run build
 # The resulting standalone file will be emitted to `dist/index.html` 
 # You can manually rename and move this to replacing `BearSentinel_v2.html`
 ```
+
+⚠️ LEGAL NOTICE & USAGE WARNING
+BearSentinel is a tool for metadata analysis only. It does not decrypt voice traffic. Before deployment, you must review the LICENSE.md for critical disclosures regarding Florida Statute 843.16 and federal SIGINT regulations.
+
+The TL;DR: If you put this in a vehicle without a Ham license, or use it to play "hide and seek" with the law, you are on your own. We provide the speedometer; you choose the velocity. Use responsibly or not at all.
