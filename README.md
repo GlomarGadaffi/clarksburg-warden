@@ -10,8 +10,9 @@ The BearSentinel dashboard provides two primary operational modes designed to de
 
 ### 1. EDACS Exclusive Mode (SLERS)
 This mode is dedicated to deeply analyzing EDACS format control channels, such as the State of Florida's Statewide Law Enforcement Radio System (SLERS). By intercepting raw EDW telemetry strings, it provides:
-*   **Real-Time Patch Matrix:** Actively monitors and tracks spontaneous multi-agency operational patches as they occur.
-*   **Live Call Feed:** Decodes Control Channel Grants to reveal exactly who is actively keying their radio. It maps out the allocated Logical Channel Number (repeater slot) or Voice Channel frequency, an interception feature that works **even if the actual voice traffic is encrypted**.
+*   **Real-Time Patch Matrix:** Actively monitors and tracks spontaneous multi-agency operational patches as they occur, featuring animated TX indicators for live activity.
+*   **Live Call Feed:** Decodes Control Channel Grants (`TG`, `ICALL`, `CPT`) to reveal exactly who is actively keying their radio. It maps out the allocated Logical Channel Number (repeater slot) or Voice Channel frequency—working **even if the actual voice traffic is encrypted**. Custom opacity fading gracefully decays older calls.
+*   **Rolling Leaderboard:** Ranks Talkgroups by activity spikes over dynamic 5-minute and 60-minute trailing windows to rapidly identify major ongoing incidents.
 
 ### 2. Unified Mode (EDACS + P25 Phase I/II)
 This hybrid dashboard merges EDACS patch tracking with active P25 network polling, which is specifically designed for monitoring local municipal systems. Its main capabilities include:
@@ -19,8 +20,11 @@ This hybrid dashboard merges EDACS patch tracking with active P25 network pollin
 *   **Direct Scanner Override:** Users can click on a talkgroup card directly in the dashboard to aggressively issue a "Hold" command (`KEY,H,P`) over the serial connection, allowing the dashboard to physically override the scanner's internal scan engine.
 *   **Talkgroup Discovery:** Automatically highlights newly discovered Talkgroups while exploring the radio system.
 
-### Offline Telemetry Tracking
-Beyond live visualization, the dashboard continuously persists telemetry metrics, such as **Talk Group leaderboards**. Because BearSentinel operates as a strict client-side, zero-install application, all of this data is securely written to your local browser sandbox (`localStorage`) and is **never pushed to the cloud**.
+### Offline Telemetry Tracking & Export
+Beyond live visualization, the dashboard continuously persists telemetry metrics via a centralized state engine. 
+*   **Zero-Cloud Persistence:** Because BearSentinel operates as a strict client-side application, all of this data is securely written to your local browser sandbox (`localStorage`) and is **never pushed to the cloud**.
+*   **Session Export:** Full session telemetry, including a flat CSV of all intercepted call grants and a structured JSON state dump, can be exported at any time for post-incident review.
+*   **Diagnostic Raw Log:** A togglable, syntax-highlighted raw serial output drawer streams the last 200 intercepted scanner commands directly in the UI.
 
 ---
 
