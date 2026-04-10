@@ -260,7 +260,7 @@ export class SentinelStore {
         this.emitChange();
     }
 
-    public getLeaderboardRows(): LeaderboardEntry[] {
+    public getLeaderboardRows = (): LeaderboardEntry[] => {
         const now = Date.now();
         const rows: LeaderboardEntry[] = [];
         
