@@ -145,7 +145,19 @@ export class SerialMonitor {
     }
 
     route(line: string) {
-        if (
+        // GLG has an unambiguous prefix and must be matched FIRST. The EDACS
+        // branch below uses loose substring matching (/TG-|CH-|LCN-|VC-/), and a
+        // GLG response whose channel-name field contains "CH-" (etc.) would
+        // otherwise be misrouted to the EDACS parser and silently dropped.
+        if (line.startsWith("GLG")) {
+            const p25Event = ScannerDecoder.parseP25(line);
+            if (p25Event) {
+                this.p25Listeners.forEach(cb => cb(p25Event));
+            }
+            // GLG is the only solicited response we poll for, so clear isBusy here.
+            this.isBusy = false;
+            this.processQueue();
+        } else if (
             line.includes("EDW") ||
             line.includes("EDN") ||
             line.includes("SIT-") ||
@@ -156,14 +168,6 @@ export class SerialMonitor {
             if (edacsEvent) {
                 this.edacsListeners.forEach(cb => cb(edacsEvent));
             }
-        } else if (line.startsWith("GLG")) {
-            const p25Event = ScannerDecoder.parseP25(line);
-            if (p25Event) {
-                this.p25Listeners.forEach(cb => cb(p25Event));
-            }
-            // GLG is the only solicited response we poll for, so clear isBusy here.
-            this.isBusy = false;
-            this.processQueue();
         } else if (line.startsWith("KEY,") || line.startsWith("ERR")) {
             // KEY,OK (response to KEY,S,P / KEY,H,P) and ERR responses are unsolicited
             // acknowledgements — they are not GLG responses, but they do confirm the
