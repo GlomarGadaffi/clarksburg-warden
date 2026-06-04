@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSentinelState } from '../core/useSentinel';
+import { useSentinelState, useNow } from '../core/useSentinel';
 import { DB, agClass } from '../core/AgencyDB';
 import { Activity } from 'lucide-react';
 import './GrantFeed.css';
@@ -49,7 +49,7 @@ export default function GrantFeed() {
     // To prevent the feed from being rendered backwards compared to what user wants (newest at bottom)
     // Actually, grants array has newest at index 0 (unshifted). We reverse it for rendering so newest is at bottom.
     const reversedGrants = [...grants].reverse();
-    const now = Date.now();
+    const now = useNow();
 
     return (
         <div className="edacs-feed-panel">

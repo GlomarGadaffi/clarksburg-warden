@@ -45,6 +45,23 @@
     --font-ui: 'IBM Plex Sans', -apple-system, sans-serif;
 
     --radius: 3px;
+    --radius-md: 5px;
+
+    /* Spacing scale */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 20px;
+    --sp-6: 24px;
+
+    /* Focus ring */
+    --focus-ring: 0 0 0 2px var(--bg-void), 0 0 0 4px var(--slers-primary);
+    --focus-ring-alert: 0 0 0 2px var(--bg-void), 0 0 0 4px var(--alert);
+
+    /* Transition */
+    --tx-fast: 0.12s ease;
+    --tx-normal: 0.2s ease;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -61,6 +78,49 @@ body {
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
 }
+
+/* Global focus-visible outline — keyboard users only */
+:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+/* Shared panel chrome */
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--sp-4);
+    height: 32px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.panel-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.panel-badge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-lo);
+    background: rgba(255,255,255,0.05);
+    padding: 2px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+}
+
+.slers-accent { border-top: 2px solid var(--slers-primary); }
+.slers-title-color { color: var(--slers-primary); }
 
 /* Animations */
 @keyframes blink-fast { 50% { opacity: 0; } }
@@ -81,4 +141,35 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
 .card-enter { animation: card-in 0.2s ease-out; }
+
+/* Empty-state shared style */
+.empty-state-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    padding: 48px var(--sp-4);
+    text-align: center;
+    color: var(--text-lo);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+.empty-state-panel .empty-icon {
+    opacity: 0.3;
+    margin-bottom: var(--sp-1);
+}
+
+.empty-state-panel strong {
+    color: var(--text-mid);
+    font-size: 12px;
+    display: block;
+}

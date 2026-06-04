@@ -1,107 +1,311 @@
+/* =========================================================
+   App Shell — header, workspace, status bar
+   ========================================================= */
+
 .app-container {
     display: grid;
-    grid-template-rows: 48px 1fr auto 28px;
+    grid-template-rows: 48px 1fr auto auto;
     height: 100vh;
+    min-width: 0;
 }
 
+/* ---------------------------------------------------------
+   Header
+   --------------------------------------------------------- */
 header {
     background: var(--bg-surface);
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px;
+    padding: 0 var(--sp-4);
     z-index: 10;
+    gap: var(--sp-4);
+    min-width: 0;
 }
 
-.brand { display: flex; align-items: center; gap: 16px; }
+.brand {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    flex-shrink: 0;
+}
+
 .brand-mark {
-    font-family: var(--font-mono); font-weight: 800; font-size: 13px;
-    letter-spacing: 3px; color: var(--text-hi); text-transform: uppercase;
+    font-family: var(--font-mono);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--text-hi);
+    text-transform: uppercase;
+    white-space: nowrap;
 }
-.brand-divider { width: 1px; height: 20px; background: var(--border); }
-.brand-systems { display: flex; gap: 14px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 1.5px; }
 
-.sys-tag { display: flex; align-items: center; gap: 6px; cursor: pointer; opacity: 0.5; transition: all 0.2s;}
-.sys-tag.active { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
-.sys-tag::before { content: ''; width: 6px; height: 6px; border-radius: 1px; }
-.sys-tag.slers::before { background: var(--slers-primary); }
-.sys-tag.p25::before { background: var(--p25-primary); }
+.brand-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    flex-shrink: 0;
+}
 
-.header-controls { display: flex; align-items: center; gap: 10px; }
+.brand-systems {
+    display: flex;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+}
+
+/* Tab switch buttons — was plain <span>, now real <button> */
+.sys-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity var(--tx-normal), text-shadow var(--tx-normal);
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 2px;
+    border-radius: var(--radius);
+}
+
+.sys-tab:hover { opacity: 0.8; }
+.sys-tab.active { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+.sys-tab:focus-visible { box-shadow: var(--focus-ring); }
+
+.sys-tab::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    flex-shrink: 0;
+}
+
+.sys-tab.slers::before { background: var(--slers-primary); }
+.sys-tab.p25::before  { background: var(--p25-primary); }
+
+/* ---------------------------------------------------------
+   Header controls
+   --------------------------------------------------------- */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
 
 .conn-indicator {
-    font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 1px;
-    padding: 4px 10px; border-radius: var(--radius); display: flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-lo);
-    transition: all 0.3s;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    color: var(--text-lo);
+    transition: color var(--tx-normal), border-color var(--tx-normal), background var(--tx-normal);
+    white-space: nowrap;
 }
-.conn-indicator.live { color: var(--online); border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.06); }
-.conn-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; transition: all 0.3s; }
-.conn-indicator.live .conn-dot { box-shadow: 0 0 6px currentColor; animation: pulse-dot 2s infinite; }
-@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
+.conn-indicator.live {
+    color: var(--online);
+    border-color: rgba(0, 230, 118, 0.3);
+    background: rgba(0, 230, 118, 0.06);
+}
+
+.conn-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    transition: box-shadow var(--tx-normal);
+    flex-shrink: 0;
+}
+
+.conn-indicator.live .conn-dot {
+    box-shadow: 0 0 6px currentColor;
+    animation: pulse-dot 2s infinite;
+}
+
+/* Header buttons */
 .hdr-btn {
-    font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
-    padding: 5px 14px; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; background: transparent;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background var(--tx-fast), color var(--tx-fast), opacity var(--tx-fast);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
 }
-.btn-connect { border: 1px solid rgba(0, 230, 118, 0.4); color: var(--online); }
-.btn-connect:hover { background: rgba(0, 230, 118, 0.1); }
-.btn-disconnect { border: 1px solid rgba(255, 23, 68, 0.3); color: var(--alert); }
-.btn-disconnect:hover { background: rgba(255, 23, 68, 0.1); }
-.btn-wipe { border: 1px solid var(--border); color: var(--text-lo); }
-.btn-wipe:hover { background: rgba(255,255,255,0.05); color: var(--text-mid); }
 
-.workspace {
-    display: flex; /* we'll handle layout within dashboards */
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
+.hdr-btn:focus-visible { box-shadow: var(--focus-ring); outline: none; }
+.hdr-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-connect {
+    border: 1px solid rgba(0, 230, 118, 0.4);
+    color: var(--online);
+}
+.btn-connect:hover:not(:disabled) { background: rgba(0, 230, 118, 0.1); }
+.btn-connect:active:not(:disabled) { background: rgba(0, 230, 118, 0.18); }
+
+.btn-disconnect {
+    border: 1px solid rgba(255, 23, 68, 0.35);
+    color: var(--alert);
+}
+.btn-disconnect:hover:not(:disabled) { background: rgba(255, 23, 68, 0.1); }
+.btn-disconnect:active:not(:disabled) { background: rgba(255, 23, 68, 0.18); }
+
+.btn-connecting {
+    border: 1px solid rgba(255, 214, 0, 0.4);
+    color: var(--warn);
+    animation: pulse-dot 1.2s infinite;
 }
 
-.status-bar {
-    background: var(--bg-surface); border-top: 1px solid var(--border);
-    padding: 0 16px; display: flex; align-items: center; justify-content: space-between;
-    font-family: var(--font-mono); font-size: 9px; color: var(--text-lo); letter-spacing: 0.5px;
+.btn-wipe {
+    border: 1px solid var(--border);
+    color: var(--text-lo);
 }
-.status-bar-left, .status-bar-right { display: flex; align-items: center; gap: 16px; }
-.stat-item { display: flex; align-items: center; gap: 4px; }
-.stat-label { opacity: 0.6; }
-.stat-val { color: var(--text-mid); }
+.btn-wipe:hover:not(:disabled) { background: rgba(255,255,255,0.05); color: var(--text-mid); }
+.btn-wipe:active:not(:disabled) { background: rgba(255,255,255,0.08); }
 
+/* Export dropdown */
 .export-menu-wrapper {
     position: relative;
 }
 
 .export-menu {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 4px);
     right: 0;
-    margin-top: 4px;
     background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: 1px solid var(--border-bright);
+    border-radius: var(--radius-md);
     padding: 4px;
-    z-index: 100;
+    z-index: 200;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     min-width: 100px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 
+.export-menu .hdr-btn {
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.export-menu .hdr-btn:hover { background: rgba(255,255,255,0.06); color: var(--text-hi); }
+
+/* ---------------------------------------------------------
+   Workspace
+   --------------------------------------------------------- */
+.workspace {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+/* ---------------------------------------------------------
+   Raw Log Drawer (sits between workspace and status bar)
+   --------------------------------------------------------- */
+
+/* ---------------------------------------------------------
+   Status Bar
+   --------------------------------------------------------- */
+.status-bar {
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border);
+    padding: 0 var(--sp-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-lo);
+    letter-spacing: 0.5px;
+    min-height: 28px;
+}
+
+.status-bar-left,
+.status-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-label { opacity: 0.6; }
+.stat-val { color: var(--text-mid); }
+
 .short-divider {
+    width: 1px;
     height: 12px;
+    background: var(--border);
 }
 
 .raw-log-toggle {
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
     color: var(--text-mid);
     font-family: var(--font-mono);
     font-size: 9px;
     font-weight: 700;
     cursor: pointer;
     letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color var(--tx-fast), border-color var(--tx-fast), background var(--tx-fast);
 }
-.raw-log-toggle:hover { color: var(--text-hi); }
 
+.raw-log-toggle:hover { color: var(--text-hi); border-color: var(--border); }
+.raw-log-toggle.active { color: var(--slers-primary); border-color: rgba(0,212,255,0.25); background: rgba(0,212,255,0.05); }
+.raw-log-toggle:focus-visible { box-shadow: var(--focus-ring); outline: none; }
+
+/* ---------------------------------------------------------
+   Responsive — narrower viewports
+   --------------------------------------------------------- */
+@media (max-width: 900px) {
+    .brand-systems { display: none; }
+    .conn-indicator span:last-child { display: none; }  /* hide text, keep dot */
+}
+
+@media (max-width: 640px) {
+    header { padding: 0 var(--sp-2); gap: var(--sp-2); }
+    .brand-mark { font-size: 11px; letter-spacing: 2px; }
+    .hdr-btn { padding: 5px 8px; font-size: 9px; }
+    .conn-indicator { padding: 4px 6px; }
+    .status-bar { padding: 4px var(--sp-2); font-size: 8px; }
+    .status-bar-left, .status-bar-right { gap: 8px; }
+}

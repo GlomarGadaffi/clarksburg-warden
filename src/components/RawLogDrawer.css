@@ -24,18 +24,19 @@
 
 .raw-log-header button {
     background: none;
-    border: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
     color: var(--text-lo);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.1s;
+    padding: 3px;
+    transition: color var(--tx-fast);
 }
 
-.raw-log-header button:hover {
-    color: var(--text-hi);
-}
+.raw-log-header button:hover { color: var(--text-hi); }
+.raw-log-header button:focus-visible { box-shadow: var(--focus-ring); outline: none; }
 
 .raw-log-content {
     flex: 1;
@@ -67,3 +68,10 @@
 .log-edw { color: var(--slers-primary); }
 .log-glg { color: var(--p25-primary); }
 .log-err { color: var(--alert); }
+
+.raw-log-empty {
+    color: var(--text-lo);
+    font-size: 10px;
+    padding: 12px 0;
+    text-align: center;
+}

@@ -1,5 +1,21 @@
 {
-  "name": "tmp-app",
+  "name": "bearsentinel",
+  "description": "Browser-based telemetry dashboard for decoding EDACS/P25 radio scanner control-channel data from a Uniden BCD325P2 via the Web Serial API",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GlomarGadaffi/BearSentinel"
+  },
+  "keywords": [
+    "web-serial",
+    "edacs",
+    "p25",
+    "scanner",
+    "sdr",
+    "telemetry",
+    "uniden",
+    "bcd325p2"
+  ],
   "private": true,
   "version": "0.0.0",
   "type": "module",

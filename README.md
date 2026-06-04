@@ -135,7 +135,7 @@ npm install
 npm run dev
 ```
 
-The Vite dev server starts with Hot Module Replacement. Connect the scanner and open the local URL in Chrome or Edge.
+The Vite dev server starts with Hot Module Replacement. `localhost` is a secure context, so the Web Serial API works out of the box on the local machine. To access the dev server from another device on your LAN (e.g. a laptop running Chrome), place `cert.pem` and `cert-key.pem` at the repo root — `vite.config.ts` auto-detects them and enables HTTPS on `host: true`. Connect the scanner and open the URL in Chrome or Edge.
 
 ### Project structure
 
@@ -161,13 +161,30 @@ src/
     └── index.ts          # Shared TypeScript interfaces
 ```
 
+### Architecture
+
+Data flows through four layers from the USB port to the React UI:
+
+```
+SerialMonitor  →  Decoder  →  SentinelStore  →  useSentinel hook  →  React components
+```
+
+- **SerialMonitor** (`src/core/SerialMonitor.ts`) — owns the Web Serial read loop and the 150 ms `GLG` poll timer for P25 mode.
+- **Decoder** (`src/core/Decoder.ts`) — pure static parser; accepts a raw line string and returns a typed event (`EDACSEvent` subtypes or `P25Event`) or `null`. No side effects.
+- **SentinelStore** (`src/core/SentinelStore.ts`) — central state engine; receives decoded events, updates counters/leaderboards/patch state, and persists hit counters to `localStorage`.
+- **useSentinel** (`src/core/useSentinel.ts`) — React hook that subscribes components to store updates.
+
+### Browser Support
+
+Web Serial API is only available in **Chromium-based browsers**. Use Google Chrome or Microsoft Edge (desktop, version 89+). Firefox and Safari do not support Web Serial and cannot run BearSentinel.
+
 ### Building the standalone file
 
 ```bash
 npm run build
 ```
 
-Output is written to `dist/index.html`. Replace `BearSentinel_v2.html` with this file to distribute the updated build.
+Output is written to `dist/index.html`. This single file has no external dependencies and can be opened directly in Chrome or Edge. Replace `BearSentinel_v2.html` with this file to distribute the updated build.
 
 ---
 

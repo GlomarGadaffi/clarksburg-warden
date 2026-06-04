@@ -1,11 +1,11 @@
-import { useSentinelState } from '../core/useSentinel';
+import { useSentinelState, useNow } from '../core/useSentinel';
 import { DB, agClass } from '../core/AgencyDB';
 import { Radio } from 'lucide-react';
 import './PatchMatrix.css';
 
 export default function PatchMatrix() {
     const { patches, siteId, persistentSlers } = useSentinelState();
-    const now = Date.now();
+    const now = useNow();
 
     const formatAge = (diffMs: number) => {
         if (diffMs < 60000) return `${Math.floor(diffMs/1000)}s ago`;
@@ -15,15 +15,21 @@ export default function PatchMatrix() {
     return (
         <div className="edacs-matrix-panel">
             <div className="panel-header slers-accent">
-                <span className="panel-title slers-title-color"><Radio size={12}/> Patch Matrix (Active)</span>
+                <span className="panel-title slers-title-color">
+                    <Radio size={12} aria-hidden="true" />
+                    Patch Matrix (Active)
+                </span>
                 <span className="panel-badge">SITE: {siteId}</span>
             </div>
             <div className="patch-grid">
-                {patches.size === 0 && <div className="patch-empty">
-                    <strong>Listening for EDW Control Stream</strong>
-                    Enable "C-CH Output" in Scanner Settings
-                </div>}
-                
+                {patches.size === 0 && (
+                    <div className="patch-empty">
+                        <Radio size={28} style={{ opacity: 0.25, marginBottom: 4 }} aria-hidden="true" />
+                        <strong>Awaiting control channel…</strong>
+                        <span className="patch-empty-hint">Enable "C-CH Output" in Scanner Settings</span>
+                    </div>
+                )}
+
                 {Array.from(patches.entries()).map(([pid, p]) => {
                     const diff = now - p.lastSeen;
                     return (
@@ -40,7 +46,7 @@ export default function PatchMatrix() {
                                             <span className="member-id">{mid}</span>
                                             <span className="member-name">{info.n}</span>
                                         </div>
-                                    )
+                                    );
                                 })}
                             </div>
                             <div className="patch-footer">

@@ -9,7 +9,7 @@
 
 .patch-grid {
     flex: 1;
-    padding: 12px;
+    padding: var(--sp-3);
     overflow-y: auto;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -17,42 +17,56 @@
     align-content: start;
 }
 
+/* Empty state */
 .patch-empty {
     grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    padding: 56px var(--sp-4);
     text-align: center;
-    padding: 60px 20px;
     color: var(--text-lo);
     font-family: var(--font-mono);
     font-size: 11px;
-    line-height: 2;
+    line-height: 1.8;
 }
 
 .patch-empty strong {
     color: var(--slers-primary);
     display: block;
     font-size: 12px;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
+.patch-empty .patch-empty-hint {
+    font-size: 10px;
+    color: var(--text-lo);
+    opacity: 0.6;
+}
+
+/* Patch card */
 .patch-card {
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-left: 3px solid var(--slers-primary);
     border-radius: var(--radius);
     overflow: hidden;
-    transition: all 0.25s;
+    transition: background var(--tx-normal), border-color var(--tx-normal), box-shadow var(--tx-normal);
 }
 
+/* TX (active keying) flash */
 .patch-card.tx {
     background: var(--slers-dim);
     border-color: rgba(0, 212, 255, 0.3);
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.06);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.08);
     animation: tx-pulse 2s ease-out;
 }
 
 @keyframes tx-pulse {
-    0% { background: rgba(0, 212, 255, 0.15); }
-    100% { background: var(--slers-dim); }
+    0%   { background: rgba(0, 212, 255, 0.18); box-shadow: 0 0 24px rgba(0, 212, 255, 0.2); }
+    100% { background: var(--slers-dim);         box-shadow: 0 0 0 transparent; }
 }
 
 .patch-card-head {
@@ -85,19 +99,19 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 3px 0;
+    padding: 3px 0 3px 8px;
     font-size: 11px;
     border-left: 2px solid var(--ag-unk);
-    padding-left: 8px;
     margin-bottom: 2px;
 }
 
-.member-row.ag-FHP { border-left-color: var(--ag-fhp); }
+/* Agency accent on member rows */
+.member-row.ag-FHP  { border-left-color: var(--ag-fhp); }
 .member-row.ag-FDLE { border-left-color: var(--ag-fdle); }
-.member-row.ag-FWC { border-left-color: var(--ag-fwc); }
-.member-row.ag-LOC { border-left-color: var(--ag-loc); }
-.member-row.ag-INT { border-left-color: var(--ag-int); }
-.member-row.ag-TEC { border-left-color: var(--ag-tec); }
+.member-row.ag-FWC  { border-left-color: var(--ag-fwc); }
+.member-row.ag-LOC  { border-left-color: var(--ag-loc); }
+.member-row.ag-INT  { border-left-color: var(--ag-int); }
+.member-row.ag-TEC  { border-left-color: var(--ag-tec); }
 
 .member-id {
     font-family: var(--font-mono);
@@ -119,7 +133,9 @@
     color: var(--text-lo);
     display: flex;
     justify-content: space-between;
+    align-items: center;
     border-top: 1px solid rgba(255,255,255,0.03);
 }
 
 .patch-footer b { color: var(--text-mid); }
+.patch-age { color: var(--text-lo); opacity: 0.7; }

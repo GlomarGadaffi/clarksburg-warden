@@ -14,7 +14,7 @@
 }
 
 .unified-left-panel .edacs-matrix-panel {
-    border-left: none; /* It's the leftmost element now */
+    border-left: none;
 }
 
 .p25-panel {
@@ -37,11 +37,11 @@
     flex: 1;
 }
 
-/* LCD */
+/* LCD display */
 .lcd {
     background: #000;
-    margin: 12px;
-    padding: 16px;
+    margin: var(--sp-3);
+    padding: var(--sp-4);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     text-align: center;
@@ -65,6 +65,7 @@
     font-weight: 600;
     color: var(--text-hi);
     margin-bottom: 2px;
+    min-height: 18px;
 }
 
 .lcd-agency {
@@ -72,27 +73,41 @@
     font-size: 10px;
     color: var(--text-lo);
     letter-spacing: 1px;
+    min-height: 14px;
+}
+
+/* Placeholder text in LCD when no data */
+.lcd-placeholder {
+    color: var(--text-lo);
+    font-weight: 400;
+    font-size: 0.85em;
+    opacity: 0.7;
 }
 
 .lcd-state {
     position: absolute;
     top: 10px;
-    right: 12px;
+    right: var(--sp-3);
     font-family: var(--font-mono);
     font-size: 9px;
     font-weight: 700;
     letter-spacing: 1px;
     color: var(--text-lo);
-    transition: all 0.15s;
+    transition: color var(--tx-fast);
 }
 
 .lcd-state.scanning { color: var(--text-lo); }
 .lcd-state.skipping { color: var(--alert); animation: blink-fast 0.2s infinite; }
-.lcd-state.holding { color: var(--alert); border: 1px solid var(--alert); padding: 2px 6px; border-radius: 2px; }
+.lcd-state.holding {
+    color: var(--alert);
+    border: 1px solid var(--alert);
+    padding: 2px 6px;
+    border-radius: 2px;
+}
 
-/* Tactical Grid */
+/* Tactical Grid header */
 .tac-grid-header {
-    padding: 4px 16px;
+    padding: 4px var(--sp-4);
     font-family: var(--font-mono);
     font-size: 9px;
     font-weight: 600;
@@ -101,51 +116,129 @@
     text-transform: uppercase;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     flex-shrink: 0;
+}
+
+.tac-grid-hint {
+    font-size: 8px;
+    opacity: 0.5;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+/* Empty state when no talkgroups */
+.tac-grid-empty {
+    flex: 1;
+    color: var(--text-lo);
 }
 
 .tac-grid {
     flex: 1;
     overflow-y: auto;
-    padding: 4px 12px 12px;
+    padding: 4px var(--sp-3) var(--sp-3);
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
     gap: 8px;
     align-content: start;
 }
 
+/* tg-card is now a <button> — reset button defaults */
 .tg-card {
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-left: 3px solid var(--ag-unk);
     border-radius: var(--radius);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background var(--tx-normal), border-color var(--tx-normal), box-shadow var(--tx-normal), transform var(--tx-fast);
     overflow: hidden;
+    text-align: left;
+    /* button reset */
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    width: 100%;
 }
 
 .tg-card:hover { background: var(--bg-overlay); }
-.tg-card.active { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.4); border-color: rgba(255, 167, 38, 0.3); background: var(--p25-dim); }
+
+.tg-card:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+.tg-card.active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    border-color: rgba(255, 167, 38, 0.3);
+    background: var(--p25-dim);
+}
+
 .tg-card.holding {
-    border-color: var(--alert) !important; border-left-color: var(--alert) !important;
-    background: rgba(255, 23, 68, 0.08); box-shadow: 0 0 20px rgba(255, 23, 68, 0.15);
+    border-color: var(--alert) !important;
+    border-left-color: var(--alert) !important;
+    background: rgba(255, 23, 68, 0.08);
+    box-shadow: 0 0 20px rgba(255, 23, 68, 0.15);
     animation: hold-pulse 2.5s infinite;
 }
-.tg-card.discovery { border-color: rgba(255,255,255,0.3); box-shadow: 0 0 12px rgba(0, 212, 255, 0.15); }
 
-.tg-card.ag-FHP { border-left-color: var(--ag-fhp); }
+.tg-card.discovery {
+    border-color: rgba(255,255,255,0.3);
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+}
+
+/* Agency accent on left border */
+.tg-card.ag-FHP  { border-left-color: var(--ag-fhp); }
 .tg-card.ag-FDLE { border-left-color: var(--ag-fdle); }
-.tg-card.ag-FWC { border-left-color: var(--ag-fwc); }
-.tg-card.ag-LOC { border-left-color: var(--ag-loc); }
-.tg-card.ag-INT { border-left-color: var(--ag-int); }
-.tg-card.ag-TEC { border-left-color: var(--ag-tec); }
+.tg-card.ag-FWC  { border-left-color: var(--ag-fwc); }
+.tg-card.ag-LOC  { border-left-color: var(--ag-loc); }
+.tg-card.ag-INT  { border-left-color: var(--ag-int); }
+.tg-card.ag-TEC  { border-left-color: var(--ag-tec); }
 
-.tg-head { padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.03); }
-.tg-head-left { display: flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; }
-.badge-hits { font-family: var(--font-mono); font-size: 9px; font-weight: 600; color: var(--text-lo); background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 2px; }
+.tg-head {
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.tg-head-left {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.badge-hits {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-lo);
+    background: rgba(255,255,255,0.05);
+    padding: 1px 6px;
+    border-radius: 2px;
+}
+
 .tg-body { padding: 8px 10px; }
-.tg-name { font-size: 12px; font-weight: 600; color: var(--text-hi); margin-bottom: 3px; }
-.tg-meta { display: flex; justify-content: space-between; align-items: center; font-size: 9px; color: var(--text-lo); }
+
+.tg-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-hi);
+    margin-bottom: 3px;
+}
+
+.tg-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    color: var(--text-lo);
+}
 
 .badge-new {
     font-size: 8px;
@@ -166,4 +259,29 @@
     background: var(--alert);
     color: #fff;
     letter-spacing: 0.5px;
+}
+
+/* Responsive: collapse side-by-side on narrow screens */
+@media (max-width: 900px) {
+    .unified-dashboard {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .unified-left-panel,
+    .p25-panel {
+        flex: none;
+        height: auto;
+        min-height: 320px;
+        border-left: none;
+        border-top: 1px solid var(--border);
+    }
+
+    .unified-left-panel {
+        border-top: none;
+    }
+
+    .tac-grid {
+        max-height: 360px;
+    }
 }

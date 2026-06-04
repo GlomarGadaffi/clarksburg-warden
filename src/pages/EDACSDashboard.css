@@ -15,29 +15,32 @@
 }
 
 .edacs-right-panel .edacs-matrix-panel {
-    border-left: none; /* remove nested border */
+    border-left: none;
 }
 
+/* Sub-view toggle bar (Leaderboard / Auto-LCN Map) */
 .edacs-toggle-bar {
     display: flex;
     background: var(--bg-surface);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
 }
 
 .edacs-toggle-bar button {
     flex: 1;
     background: transparent;
     border: none;
+    border-bottom: 2px solid transparent;
     color: var(--text-lo);
     font-family: var(--font-mono);
     font-size: 9px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 6px 0;
+    padding: 7px 0;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: color var(--tx-normal), background var(--tx-normal), border-color var(--tx-normal);
 }
 
 .edacs-toggle-bar button:hover {
@@ -48,5 +51,28 @@
 .edacs-toggle-bar button.active {
     color: var(--slers-primary);
     background: rgba(0, 212, 255, 0.05);
-    border-bottom: 2px solid var(--slers-primary);
+    border-bottom-color: var(--slers-primary);
+}
+
+.edacs-toggle-bar button:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    position: relative;
+    z-index: 1;
+}
+
+/* Responsive: stack panels vertically on narrow screens */
+@media (max-width: 900px) {
+    .edacs-dashboard {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .edacs-right-panel {
+        flex: none;
+        height: auto;
+        min-height: 300px;
+        border-left: none;
+        border-top: 1px solid var(--border);
+    }
 }
