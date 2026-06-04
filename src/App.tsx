@@ -1,18 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import { Serial } from './core/SerialMonitor';
+import { Demo } from './core/DemoFeed';
 import UnifiedDashboard from './pages/UnifiedDashboard';
 import EDACSDashboard from './pages/EDACSDashboard';
 import ExportButton from './components/ExportButton';
+import ReplayButton from './components/ReplayButton';
 import RawLogDrawer from './components/RawLogDrawer';
 import { SentinelContext, defaultStore, useSentinelState, useSentinelStore } from './core/useSentinel';
-import { Usb, Unplug, Trash2, Terminal } from 'lucide-react';
+import { Usb, Unplug, Trash2, Terminal, FlaskConical } from 'lucide-react';
 
 function AppContent() {
   const store = useSentinelStore();
   const { stats } = useSentinelState();
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [demoOn, setDemoOn] = useState(false);
   const [view, setView] = useState<'UNIFIED' | 'EDACS'>('EDACS');
   const [time, setTime] = useState('--:--:--');
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -30,8 +33,13 @@ function AppContent() {
     return () => { unsub(); clearInterval(intv); };
   }, [stats.sessionStart]);
 
+  // Stop demo when the app unmounts so no intervals leak.
+  useEffect(() => {
+    return () => { Demo.stop(); };
+  }, []);
+
   const handleConnect = useCallback(async () => {
-    if (connecting) return;
+    if (connecting || demoOn) return;
     setConnecting(true);
     try {
       if (!connected) await Serial.connect();
@@ -39,6 +47,19 @@ function AppContent() {
     } finally {
       setConnecting(false);
     }
+  }, [connected, connecting, demoOn]);
+
+  const handleToggleDemo = useCallback(() => {
+    // Demo and a real serial connection are mutually exclusive.
+    if (connected || connecting) return;
+    setDemoOn(prev => {
+      if (prev) {
+        Demo.stop();
+        return false;
+      }
+      Demo.start();
+      return true;
+    });
   }, [connected, connecting]);
 
   const handleToggleDrawer = useCallback(() => {
@@ -81,23 +102,34 @@ function AppContent() {
         </div>
         <div className="header-controls">
           <div
-            className={`conn-indicator ${connected ? 'live' : ''}`}
-            aria-label={connected ? 'Scanner connected' : 'Scanner offline'}
+            className={`conn-indicator ${demoOn ? 'demo' : connected ? 'live' : ''}`}
+            aria-label={demoOn ? 'Demo mode active (simulated telemetry)' : connected ? 'Scanner connected' : 'Scanner offline'}
             role="status"
           >
             <span className="conn-dot" aria-hidden="true"></span>
-            <span>{connected ? 'CONNECTED' : 'OFFLINE'}</span>
+            <span>{demoOn ? 'DEMO' : connected ? 'CONNECTED' : 'OFFLINE'}</span>
           </div>
           <button
             className={connectBtnClass}
             onClick={handleConnect}
-            disabled={connecting}
+            disabled={connecting || demoOn}
             aria-label={connectLabel}
           >
             <ConnectIcon size={12} aria-hidden="true" />
             {connectLabel}
           </button>
+          <button
+            className={`hdr-btn ${demoOn ? 'btn-demo-active' : 'btn-demo'}`}
+            onClick={handleToggleDemo}
+            disabled={connected || connecting}
+            aria-pressed={demoOn}
+            aria-label={demoOn ? 'Stop demo mode' : 'Start demo mode (simulated telemetry)'}
+          >
+            <FlaskConical size={12} aria-hidden="true" />
+            {demoOn ? 'Stop Demo' : 'Demo'}
+          </button>
           <ExportButton />
+          <ReplayButton />
           <button
             className="hdr-btn btn-wipe"
             onClick={() => store.wipeDB()}

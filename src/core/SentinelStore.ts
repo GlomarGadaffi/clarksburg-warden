@@ -372,6 +372,66 @@ export class SentinelStore {
         }
     }
 
+    /**
+     * Restore a previously exported session (the shape produced by exportJSON)
+     * back into the store for offline review. Defensive against malformed input —
+     * throws a descriptive Error the UI can surface; never leaves the store in a
+     * half-applied state for fields it could not parse.
+     *
+     * Note: this restores persistent all-time counters, grants, patches and stats.
+     * The rolling-window leaderboard (tgHits) is seeded from the restored grants
+     * so the leaderboard panel populates immediately for the imported session.
+     */
+    public importSession(data: unknown) {
+        if (typeof data !== 'object' || data === null) {
+            throw new Error('Invalid session file: expected a JSON object.');
+        }
+        const d = data as Record<string, unknown>;
+
+        // Persistent counters (Record<string, number>).
+        if (d.persistentSlers && typeof d.persistentSlers === 'object') {
+            this.persistentSlers = d.persistentSlers as Record<string, number>;
+        }
+        if (d.persistentP25 && typeof d.persistentP25 === 'object') {
+            this.persistentP25 = d.persistentP25 as Record<string, number>;
+        }
+
+        // Stats.
+        if (d.stats && typeof d.stats === 'object') {
+            const s = d.stats as Partial<SessionStats>;
+            this.stats = {
+                sessionStart: typeof s.sessionStart === 'number' ? s.sessionStart : Date.now(),
+                patches: typeof s.patches === 'number' ? s.patches : 0,
+                grants: typeof s.grants === 'number' ? s.grants : 0,
+                p25Total: typeof s.p25Total === 'number'
+                    ? s.p25Total
+                    : Object.values(this.persistentP25).reduce((a, b) => a + b, 0)
+            };
+        }
+
+        // Patches: stored as Array<[string, PatchState]> entries.
+        if (Array.isArray(d.patches)) {
+            this.patches = new Map(d.patches as [string, PatchState][]);
+        }
+
+        // Grants.
+        if (Array.isArray(d.grants)) {
+            this.grants = (d.grants as GrantEvent[]).slice(0, 200);
+            // Seed the rolling-window leaderboard from restored grant timestamps so
+            // getLeaderboardRows() has data to show for the imported session.
+            this.tgHits = new Map();
+            for (const g of this.grants) {
+                const tgid = g.talkgroupId || g.unitId;
+                if (!tgid) continue;
+                if (!this.tgHits.has(tgid)) this.tgHits.set(tgid, []);
+                this.tgHits.get(tgid)!.push(g.timestamp);
+            }
+        }
+
+        this.scheduleSave();
+        this.emitChange();
+    }
+
     public exportJSON() {
         const data = {
             stats: this.stats,

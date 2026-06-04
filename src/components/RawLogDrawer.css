@@ -38,6 +38,29 @@
 .raw-log-header button:hover { color: var(--text-hi); }
 .raw-log-header button:focus-visible { box-shadow: var(--focus-ring); outline: none; }
 
+.raw-log-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.raw-log-filter {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-hi);
+    background: var(--bg-void);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 3px 8px;
+    width: 200px;
+    max-width: 40vw;
+    outline: none;
+    transition: border-color var(--tx-fast);
+}
+
+.raw-log-filter::placeholder { color: var(--text-lo); opacity: 0.7; }
+.raw-log-filter:focus { border-color: var(--border-bright); box-shadow: var(--focus-ring); }
+
 .raw-log-content {
     flex: 1;
     overflow-y: auto;

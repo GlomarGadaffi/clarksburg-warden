@@ -180,6 +180,51 @@ header {
     animation: pulse-dot 1.2s infinite;
 }
 
+/* Demo mode — distinct amber identity, clearly NOT a real connection */
+.conn-indicator.demo {
+    color: var(--p25-primary);
+    border-color: rgba(255, 167, 38, 0.4);
+    background: rgba(255, 167, 38, 0.08);
+}
+.conn-indicator.demo .conn-dot {
+    box-shadow: 0 0 6px currentColor;
+    animation: pulse-dot 2s infinite;
+}
+
+.btn-demo {
+    border: 1px solid rgba(255, 167, 38, 0.35);
+    color: var(--p25-primary);
+}
+.btn-demo:hover:not(:disabled) { background: rgba(255, 167, 38, 0.1); }
+.btn-demo:active:not(:disabled) { background: rgba(255, 167, 38, 0.18); }
+
+.btn-demo-active {
+    border: 1px solid rgba(255, 167, 38, 0.55);
+    color: var(--p25-primary);
+    background: rgba(255, 167, 38, 0.12);
+    animation: pulse-dot 2s infinite;
+}
+.btn-demo-active:hover:not(:disabled) { background: rgba(255, 167, 38, 0.2); }
+
+/* Replay / session import */
+.replay-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.replay-status {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.replay-ok { color: var(--online); }
+.replay-err { color: var(--alert); }
+
 .btn-wipe {
     border: 1px solid var(--border);
     color: var(--text-lo);

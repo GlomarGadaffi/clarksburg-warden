@@ -46,19 +46,47 @@ export default function GrantFeed() {
         return '';
     };
 
+    const [filter, setFilter] = useState('');
+
     // To prevent the feed from being rendered backwards compared to what user wants (newest at bottom)
     // Actually, grants array has newest at index 0 (unshifted). We reverse it for rendering so newest is at bottom.
-    const reversedGrants = [...grants].reverse();
+    // Client-side view filter only — does not change what the store retains.
+    const q = filter.trim().toLowerCase();
+    const filteredGrants = q
+        ? grants.filter(g => {
+            const tgId = g.talkgroupId || g.unitId || 'UNK';
+            const info = DB[tgId] || { n: 'Unknown Target', a: 'UNK' };
+            return (
+                tgId.toLowerCase().includes(q) ||
+                info.n.toLowerCase().includes(q) ||
+                info.a.toLowerCase().includes(q)
+            );
+        })
+        : grants;
+    const reversedGrants = [...filteredGrants].reverse();
     const now = useNow();
 
     return (
         <div className="edacs-feed-panel">
             <div className="panel-header slers-accent">
                 <span className="panel-title slers-title-color"><Activity size={12}/> Live Call Feed</span>
-                <span className="panel-badge">{grants.length} calls</span>
+                <span className="panel-badge">{q ? `${filteredGrants.length}/${grants.length}` : grants.length} calls</span>
+            </div>
+            <div className="feed-filter-bar">
+                <input
+                    type="text"
+                    className="feed-filter-input"
+                    placeholder="Filter by tgid / agency / code…"
+                    value={filter}
+                    onChange={e => setFilter(e.target.value)}
+                    aria-label="Filter call feed by talkgroup id, agency name, or agency code"
+                />
             </div>
             <div className="feed-list" ref={feedRef}>
                 {grants.length === 0 && <div className="empty-state">Awaiting Voice Channel Grants...</div>}
+                {grants.length > 0 && filteredGrants.length === 0 && (
+                    <div className="empty-state">No calls match “{filter}”.</div>
+                )}
                 {reversedGrants.map((g, i) => {
                     const tgId = g.talkgroupId || g.unitId || 'UNK';
                     const info = DB[tgId] || { n: 'Unknown Target', a: 'UNK' };
