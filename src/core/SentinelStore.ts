@@ -27,7 +27,7 @@ export interface P25CardState {
  * Also strips leading =, +, -, @ characters that spreadsheet apps interpret as
  * formula starters (CSV injection / DDE injection mitigation).
  */
-function csvField(value: string | number | undefined | null): string {
+export function csvField(value: string | number | undefined | null): string {
     const str = value == null ? '' : String(value);
     // Neutralise spreadsheet formula injection: prefix with a tab if the first
     // character is a formula-trigger character.

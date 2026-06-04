@@ -20,4 +20,13 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Test files: enable Node + browser globals. Vitest helpers (describe/it/
+    // expect/vi) are imported explicitly from 'vitest' (globals: false in
+    // vitest.config.ts), so no test-runner globals override is required.
+    files: ['**/*.test.ts'],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+    },
+  },
 ])
