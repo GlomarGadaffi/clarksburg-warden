@@ -44,6 +44,8 @@ export class SentinelStore {
 
     // State
     public siteId: string = 'AWAITING C-CH';
+    // P25 control-channel system identity, accumulated from SID-/WACN-/SIT- frames.
+    public systemInfo: { wacn?: string; sysId?: string; site?: string } = {};
     public patches: Map<string, PatchState> = new Map();
     public grants: GrantEvent[] = [];
     public p25Cards: Map<string, P25CardState> = new Map();
@@ -174,7 +176,12 @@ export class SentinelStore {
 
     private handleEDACS = (e: EDACSEvent) => {
         if (e.type === 'SITE') {
-            this.siteId = (e as SiteEvent).siteId;
+            const se = e as SiteEvent;
+            if (se.siteId) this.siteId = se.siteId;
+            // Merge P25 identity fields as they arrive on separate frames.
+            if (se.wacn)  this.systemInfo.wacn = se.wacn;
+            if (se.sysId) this.systemInfo.sysId = se.sysId;
+            if (se.site)  this.systemInfo.site = se.site;
             this.emitChange();
         } else if (e.type === 'PATCH') {
             const pe = e as PatchEvent;

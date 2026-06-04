@@ -100,7 +100,11 @@ export default function GrantFeed() {
                                     <span className={`grant-badge grant-${g.grantType.toLowerCase()}`}>{g.grantType}</span>
                                     <span className="feed-tgid">{tgId}</span>
                                 </div>
-                                <span className="feed-meta">LCN {g.logicalChannel || '--'} • VC {g.voiceChannel || '--'}</span>
+                                <span className="feed-meta">
+                                    {g.frequency
+                                        ? <><span className="feed-freq">{g.frequency}</span> • CH {g.logicalChannel || '--'}</>
+                                        : <>LCN {g.logicalChannel || '--'} • VC {g.voiceChannel || '--'}</>}
+                                </span>
                             </div>
                             <div className="feed-item-name">{info.n}</div>
                             <div className="feed-item-footer">

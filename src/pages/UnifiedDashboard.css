@@ -29,6 +29,20 @@
 .p25-accent { border-top: 2px solid var(--p25-primary); }
 .p25-title-color { color: var(--p25-primary); }
 
+.p25-sysinfo {
+    display: flex;
+    gap: var(--sp-4, 16px);
+    flex-wrap: wrap;
+    padding: 4px var(--sp-3, 12px);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.4px;
+    color: var(--text-lo);
+    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
+}
+.p25-sysinfo b { color: var(--p25, #4ade80); font-weight: 700; }
+
 .p25-body {
     display: flex;
     flex-direction: column;

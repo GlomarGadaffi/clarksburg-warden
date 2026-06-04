@@ -32,6 +32,12 @@ export interface EDACSEventBase {
 export interface SiteEvent extends EDACSEventBase {
   type: 'SITE';
   siteId: string;
+  // P25 control-channel system identity (from SID-/WACN-/SIT- frames). Optional
+  // because EDACS SITE events only carry siteId, and each P25 frame typically
+  // carries only one of these fields.
+  wacn?: string;
+  sysId?: string;
+  site?: string;
 }
 
 export interface PatchEvent extends EDACSEventBase {
@@ -47,6 +53,11 @@ export interface GrantEvent extends EDACSEventBase {
   voiceChannel?: string;
   unitId?: string;
   grantType: 'TG' | 'ICALL' | 'CPT' | 'UNKNOWN';
+  // For P25 CNM grants the voice channel is an actual RF frequency, formatted as
+  // a display string e.g. "852.7750 MHz". Absent for EDACS (which never sends RF).
+  frequency?: string;
+  // Origin of the grant so the UI can label EDACS vs P25 control-channel grants.
+  source?: 'EDACS' | 'P25';
 }
 
 export interface UnknownEDACSEvent extends EDACSEventBase {

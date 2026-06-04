@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { Serial } from './SerialMonitor';
+import { Serial, SerialMonitor } from './SerialMonitor';
 import type { EDACSEvent, P25Event } from '../types';
 
 // These tests exercise the line-routing logic of the Serial singleton by feeding
@@ -56,5 +56,45 @@ describe('SerialMonitor.route', () => {
 
         expect(p25).toHaveLength(2);
         expect(p25.map(e => e.tgid)).toEqual(['2057', '12401']);
+    });
+
+    it('routes a raw P25 CNM control frame to the EDACS grant listener', () => {
+        const edacs: EDACSEvent[] = [];
+        unsubs.push(Serial.onEDACS(e => edacs.push(e)));
+
+        Serial.ingest('P25,02000121086301C908099C2F,CNM TG-0863 CH-121 VC-08528125\r\n');
+
+        const grants = edacs.filter(e => e.type === 'GRANT');
+        expect(grants).toHaveLength(1);
+        expect(grants[0]).toMatchObject({ talkgroupId: '2147', frequency: '852.8125 MHz', source: 'P25' });
+    });
+});
+
+describe('SerialMonitor.splitRecords (glued-line hardening)', () => {
+    it('splits a P25 frame glued to a GLG echo with no delimiter', () => {
+        expect(SerialMonitor.splitRecords('P25,0805AF10002F100CEBFF981C,PNGLG,,,,,,,,,,,,'))
+            .toEqual(['P25,0805AF10002F100CEBFF981C,PN', 'GLG,,,,,,,,,,,,']);
+    });
+
+    it('splits a CNM grant glued to a GLG echo', () => {
+        expect(SerialMonitor.splitRecords(
+            'P25,02000121086301C908099C2F,CNM TG-0863 CH-121 VC-08528125GLG,,,,,,,,,,,,'
+        )).toEqual([
+            'P25,02000121086301C908099C2F,CNM TG-0863 CH-121 VC-08528125',
+            'GLG,,,,,,,,,,,,'
+        ]);
+    });
+
+    it('leaves a clean single record intact', () => {
+        expect(SerialMonitor.splitRecords('GLG,2147,NFM,0,0,Simulcast,x,ACSO A1,1,0').filter(Boolean))
+            .toEqual(['GLG,2147,NFM,0,0,Simulcast,x,ACSO A1,1,0']);
+    });
+
+    it('ingests a glued P25+GLG chunk and still extracts the grant', () => {
+        const edacs: EDACSEvent[] = [];
+        const unsub = Serial.onEDACS(e => edacs.push(e));
+        Serial.ingest('P25,02000121086301C908099C2F,CNM TG-0863 CH-121 VC-08528125GLG,,,,,,,,,,,,\r\n');
+        unsub();
+        expect(edacs.filter(e => e.type === 'GRANT')).toHaveLength(1);
     });
 });

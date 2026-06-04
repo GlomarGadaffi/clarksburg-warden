@@ -118,6 +118,12 @@
     letter-spacing: 0.3px;
 }
 
+/* P25 grants carry a real RF frequency — highlight it. */
+.feed-freq {
+    color: var(--p25, #4ade80);
+    font-weight: 700;
+}
+
 .feed-item-name {
     font-size: 13px;
     font-weight: 600;

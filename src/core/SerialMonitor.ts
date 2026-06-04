@@ -137,18 +137,35 @@ export class SerialMonitor {
         this.buffer = lines.pop() || "";
 
         for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed) continue;
-            this.rawListeners.forEach(cb => cb(trimmed));
-            this.route(trimmed);
+            // Under simultaneous C-CH Output (Extend) + GLG polling the scanner
+            // sometimes concatenates records with NO CR/LF between them, e.g.
+            // "P25,<hex>,PNGLG,,,,,,," or "...VC-08527750GLG,,,,". Re-segment on
+            // record-prefix boundaries so each record parses cleanly.
+            for (const record of SerialMonitor.splitRecords(line)) {
+                const trimmed = record.trim();
+                if (!trimmed) continue;
+                this.rawListeners.forEach(cb => cb(trimmed));
+                this.route(trimmed);
+            }
         }
     }
 
+    /** Split a (possibly glued) line into individual scanner records. */
+    static splitRecords(line: string): string[] {
+        // The only glue pattern the scanner produces is a solicited GLG response
+        // fused onto the end of a preceding record with no CR/LF, e.g.
+        // "P25,<hex>,PNGLG,,,," or "...VC-08527750GLG,,,,". Split immediately
+        // before an embedded "GLG," (the lookahead keeps it with its record).
+        // We deliberately do NOT split on "P25,"/"EDW" etc. because those tokens
+        // can appear inside GLG name fields (e.g. a system named "GPD-P25").
+        return line.split(/(?=GLG,)/).filter(s => s.length > 0);
+    }
+
     route(line: string) {
-        // GLG has an unambiguous prefix and must be matched FIRST. The EDACS
-        // branch below uses loose substring matching (/TG-|CH-|LCN-|VC-/), and a
-        // GLG response whose channel-name field contains "CH-" (etc.) would
-        // otherwise be misrouted to the EDACS parser and silently dropped.
+        // Prefix-dispatch on unambiguous record prefixes FIRST. The EDACS branch
+        // uses loose substring matching (/TG-|CH-|LCN-|VC-/, SIT-, ...), and both
+        // GLG responses and P25 control frames contain those substrings — so they
+        // must be claimed by their exact prefixes before the EDACS fallback.
         if (line.startsWith("GLG")) {
             const p25Event = ScannerDecoder.parseP25(line);
             if (p25Event) {
@@ -157,6 +174,11 @@ export class SerialMonitor {
             // GLG is the only solicited response we poll for, so clear isBusy here.
             this.isBusy = false;
             this.processQueue();
+        } else if (line.startsWith("P25,")) {
+            // Raw P25 control-channel frame(s): CNM grants + system identity.
+            for (const ev of ScannerDecoder.parseP25Frame(line)) {
+                this.edacsListeners.forEach(cb => cb(ev));
+            }
         } else if (
             line.includes("EDW") ||
             line.includes("EDN") ||

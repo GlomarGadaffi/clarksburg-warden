@@ -7,7 +7,8 @@ import './UnifiedDashboard.css';
 
 export default function UnifiedDashboard() {
     const store = useSentinelStore();
-    const { p25Cards, lcdState, lcdData, p25HoldingTG } = useSentinelState();
+    const { p25Cards, lcdState, lcdData, p25HoldingTG, systemInfo } = useSentinelState();
+    const hasSysInfo = systemInfo.wacn || systemInfo.sysId || systemInfo.site;
 
     const sortedCards = Array.from(p25Cards.entries()).sort((a, b) => b[1].lastSeen - a[1].lastSeen);
 
@@ -28,6 +29,13 @@ export default function UnifiedDashboard() {
                         {p25Cards.size} Active
                     </span>
                 </div>
+                {hasSysInfo && (
+                    <div className="p25-sysinfo" aria-label="P25 system identity">
+                        <span>WACN <b>{systemInfo.wacn ? `0x${systemInfo.wacn}` : '—'}</b></span>
+                        <span>SysID <b>{systemInfo.sysId ? `0x${systemInfo.sysId}` : '—'}</b></span>
+                        <span>Site <b>{systemInfo.site ?? '—'}</b></span>
+                    </div>
+                )}
                 <div className="p25-body">
                     <div className="lcd" role="status" aria-label="Current scanner display">
                         <span

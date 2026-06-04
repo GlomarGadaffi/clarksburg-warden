@@ -17,6 +17,15 @@ function hexToDec(hex: string): string {
     return parseInt(hex, 16).toString(10);
 }
 
+/**
+ * Format a P25 VC- voice-channel token (8-digit, units of 100 Hz, e.g.
+ * "08527750") as a human-readable frequency string ("852.7750 MHz").
+ */
+function formatVcFreq(vc: string): string {
+    const mhz = Number(vc) / 10000;
+    return Number.isFinite(mhz) ? `${mhz.toFixed(4)} MHz` : vc;
+}
+
 export class ScannerDecoder {
     static parseEDACS(line: string): EDACSEvent | null {
         // Quick pre-filter: only process EDACS control-channel lines.
@@ -81,6 +90,7 @@ export class ScannerDecoder {
                 return {
                     type: 'GRANT',
                     grantType,
+                    source: 'EDACS',
                     // All numeric IDs converted hex → decimal string to match AgencyDB keys.
                     talkgroupId:    tgM ? hexToDec(tgM[1])  : undefined,
                     logicalChannel: chM ? hexToDec(chM[1])  : undefined,
@@ -93,6 +103,67 @@ export class ScannerDecoder {
         }
 
         return { type: 'UNKNOWN', raw: line, timestamp };
+    }
+
+    // ── P25 raw control-channel frame parser ────────────────────────────────────
+    // When "C-CH Output: Extend" is enabled the BCD325P2 dumps decoded P25 trunk
+    // control frames as:  P25,<24-hex-payload>,<annotation>
+    // Observed actionable annotations (everything is HEX unless noted):
+    //   CNM TG-<tg> CH-<ch> VC-<freq>   group voice channel grant. The annotation
+    //                                   field may contain TWO comma-separated CNM
+    //                                   grants, sometimes duplicated, so we regex-
+    //                                   extract rather than comma-split.
+    //   SID-<id> SUB-<n> SIT-<site>     system / subsystem / site identity
+    //   WACN-<wacn>                     Wide Area Communications Network id
+    //   PN / UN                         bare P25 NID/sync tags — not actionable.
+    //   IU / IUTDMA N-.. B-.. S-..      unit activity on a traffic channel — parsed
+    //                                   for completeness is intentionally skipped to
+    //                                   avoid flooding the grant feed with cryptic ids.
+    // Returns zero or more typed events (a single line can yield several).
+    static parseP25Frame(line: string): EDACSEvent[] {
+        if (!line.startsWith("P25,")) return [];
+        const timestamp = Date.now();
+        const events: EDACSEvent[] = [];
+
+        // Group voice channel grants. De-duplicate identical grants within a line.
+        const seen = new Set<string>();
+        const grantRe = /CNM TG-([0-9A-Fa-f]+) CH-([0-9A-Fa-f]+) VC-(\d+)/g;
+        let m: RegExpExecArray | null;
+        while ((m = grantRe.exec(line)) !== null) {
+            const key = `${m[1]}|${m[2]}|${m[3]}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            events.push({
+                type: 'GRANT',
+                grantType: 'TG',
+                source: 'P25',
+                talkgroupId:    hexToDec(m[1]),
+                logicalChannel: hexToDec(m[2]),
+                voiceChannel:   m[3],                 // raw VC digits (for CSV/LCN map)
+                frequency:      formatVcFreq(m[3]),   // "852.7750 MHz" for display
+                raw: line,
+                timestamp
+            } as GrantEvent);
+        }
+
+        // System identity. SID/WACN/SIT usually arrive on separate frames, so emit
+        // a SITE event carrying whichever field(s) this line contains.
+        const sidM  = line.match(/SID-([0-9A-Fa-f]+)/);
+        const wacnM = line.match(/WACN-([0-9A-Fa-f]+)/);
+        const sitM  = line.match(/SIT-(\d+)/);
+        if (sidM || wacnM || sitM) {
+            events.push({
+                type: 'SITE',
+                siteId: sitM ? sitM[1] : (sidM ? sidM[1] : ''),
+                sysId:  sidM  ? sidM[1]  : undefined,
+                wacn:   wacnM ? wacnM[1] : undefined,
+                site:   sitM  ? sitM[1]  : undefined,
+                raw: line,
+                timestamp
+            } as SiteEvent);
+        }
+
+        return events;
     }
 
     // ── GLG / P25 parser ──────────────────────────────────────────────────────

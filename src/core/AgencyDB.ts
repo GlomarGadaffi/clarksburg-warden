@@ -126,11 +126,20 @@ export const DB: Record<string, AgencyInfo> = {
     "945": { a: "TEC", n: "Radio Techs 945" },
     "49937": { a: "TEC", n: "Radio Techs 937" },
     "49945": { a: "TEC", n: "Radio Techs 945" },
-    // --- P25 ALACHUA (Overrides) ---
+    // --- P25 ALACHUA (legacy SmartZone / GRUCom overrides) ---
     "12301": { a: "LOC", n: "ACSO Dispatch 1" },
     "12302": { a: "LOC", n: "ACSO Dispatch 2" },
     "12401": { a: "LOC", n: "ACFR Fire Main" },
-    "2057": { a: "LOC", n: "GPD Dispatch A" }
+    // --- SLERS-P25 (WACN BEE00 / SID 04D9) — live-observed via scanner GLG ---
+    // Names below marked "obs" were confirmed from the scanner's own channel tags;
+    // unverified ids are observed on the control channel but not yet named (the
+    // RadioReference DB is the authority). EDACS TGs map to these as old÷16.
+    "2057": { a: "LOC", n: "GPD A1 (Gainesville PD)" },
+    "2147": { a: "LOC", n: "ACSO A1 (Sheriff Dispatch)" },
+    "2161": { a: "LOC", n: "ACSO B14" },
+    "2105": { a: "LOC", n: "Alachua SLERS-P25 2105 (unverified)" },
+    "2109": { a: "LOC", n: "Alachua SLERS-P25 2109 (unverified)" },
+    "3097": { a: "LOC", n: "Alachua SLERS-P25 3097 (unverified)" }
 };
 
 export const AG_COLORS: Record<string, string> = {
