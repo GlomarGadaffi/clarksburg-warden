@@ -135,6 +135,7 @@ export const DB: Record<string, AgencyInfo> = {
     // unverified ids are observed on the control channel but not yet named (the
     // RadioReference DB is the authority). EDACS TGs map to these as old÷16.
     "2057": { a: "LOC", n: "GPD A1 (Gainesville PD)" },
+    "2067": { a: "LOC", n: "ACSO A6" },
     "2147": { a: "LOC", n: "ACSO A1 (Sheriff Dispatch)" },
     "2161": { a: "LOC", n: "ACSO B14" },
     "2105": { a: "LOC", n: "Alachua SLERS-P25 2105 (unverified)" },
