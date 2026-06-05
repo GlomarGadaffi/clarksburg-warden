@@ -30,9 +30,23 @@ describe('ScannerDecoder.parseEDACS', () => {
             const ev = ScannerDecoder.parseEDACS('EDW PAT-7 MEM-321') as PatchEvent;
             expect(ev).not.toBeNull();
             expect(ev.type).toBe('PATCH');
-            // patchId is the raw hex label, memberId is hex->dec.
+            // Both patchId and memberId are hex->dec.
             expect(ev.patchId).toBe('7');
             expect(ev.memberId).toBe('801'); // parseInt('321',16) === 801
+        });
+
+        // Real comma-delimited EDACS OSW lines captured from a live SLERS site.
+        it('parses the real "EDW,<half>,<MT>,<payload>,<tags>" format', () => {
+            const ev = ScannerDecoder.parseEDACS('EDW,1,2C,000422,PAT-004E MEM-0422') as PatchEvent;
+            expect(ev.type).toBe('PATCH');
+            expect(ev.patchId).toBe('78');    // 0x004E — FHP Troop B Patch/Talk
+            expect(ev.memberId).toBe('1058'); // 0x0422 — FHP Troop B Law Tac
+        });
+
+        it('decodes a real SLERS site OSW (EDW,0,17,16312F,SIT-2F)', () => {
+            const ev = ScannerDecoder.parseEDACS('EDW,0,17,16312F,SIT-2F');
+            expect(ev?.type).toBe('SITE');
+            expect((ev as { siteId: string }).siteId).toBe('2F');
         });
 
         it('requires BOTH PAT- and MEM- to classify as PATCH', () => {

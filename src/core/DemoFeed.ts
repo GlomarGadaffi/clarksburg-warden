@@ -32,10 +32,18 @@ const P25_SYS = ['Simulcast'];
 const P25_GRP = ['Alachua County S', 'Gainesville Poli'];
 const P25_CHAN = ['ACSO A1', 'ACSO B14', 'GPD A1'];
 
-// Legacy EDACS talkgroups (decimal) for the EDACS dashboard demo.
-const EDACS_TGS = ['801', '802', '805', '609', '554', '171', '299'];
-const EDACS_TGS_UNKNOWN = ['1500', '4090'];
-const PATCH_MEMBERS = ['801', '802', '832', '299', '300'];
+// EDACS patches: real SLERS supergroups + member talkgroups (decimal AgencyDB
+// keys) so the patch matrix resolves to named FHP agencies.
+const EDACS_PATCHES: { p: string; m: string[] }[] = [
+    { p: '78',   m: ['1058', '1089', '1138', '1154'] }, // FHP Troop B
+    { p: '35',   m: ['250', '317', '577', '609'] },     // FHP Troop C
+    { p: '230',  m: ['231', '249', '1352'] },           // FHP Turnpike
+];
+
+/** Zero-pad a hex token to 4 chars (e.g. "4E" → "004E"). */
+function pad4(hex: string): string {
+    return ('0000' + hex).slice(-4);
+}
 
 /** Random P25 voice-channel frequency in the 851–853 MHz band as an 8-digit token. */
 function randomVc(): string {
@@ -47,7 +55,6 @@ function randomVc(): string {
 export class DemoFeed {
     private timers: number[] = [];
     private running = false;
-    private siteSeq = 0;
 
     get isRunning() {
         return this.running;
@@ -67,11 +74,10 @@ export class DemoFeed {
         // P25 control-channel voice grants (CNM) → grant feed with frequencies.
         this.timers.push(window.setInterval(() => this.emitP25Grant(), 1100));
 
-        // Legacy EDACS streams for the EDACS dashboard.
+        // EDACS streams (real SLERS OSW format) for the EDACS dashboard.
         this.emitSite();
-        this.timers.push(window.setInterval(() => this.emitSite(), 8000));
-        this.timers.push(window.setInterval(() => this.emitGrant(), 1500));
-        this.timers.push(window.setInterval(() => this.emitPatch(), 3500));
+        this.timers.push(window.setInterval(() => this.emitSite(), 3000));
+        this.timers.push(window.setInterval(() => this.emitPatch(), 1600));
     }
 
     stop() {
@@ -117,34 +123,23 @@ export class DemoFeed {
         this.feed(`P25,02000121086301C908099C2F,${annotation}`);
     }
 
-    // ── Legacy EDACS emitters ───────────────────────────────────────────────────
+    // ── EDACS emitters (real SLERS OSW format) ──────────────────────────────────
+    // Format mirrors live captures: EDW,<half>,<MT>,<24-bit payload>,<scanner tags>
 
     private emitSite() {
-        this.siteSeq = (this.siteSeq + 1) % 16;
-        const tag = '1' + this.siteSeq.toString(16).toUpperCase();
-        this.feed(`EDW SIT-${tag} CTRL-CH ACTIVE`);
-    }
-
-    private emitGrant() {
-        const useUnknown = Math.random() < 0.15;
-        const decTg = useUnknown ? pick(EDACS_TGS_UNKNOWN) : pick(EDACS_TGS);
-        const lcn = 1 + Math.floor(Math.random() * 18);
-        const vc = 1 + Math.floor(Math.random() * 24);
-        const callType = pick(['CNM', 'CIP', 'CPT']);
-        this.feed(
-            `EDW ${callType} TG-${toHex(decTg)} LCN-${toHex(String(lcn))} VC-${toHex(String(vc))}`
-        );
+        // MT 0x17 site OSW, tagged SIT-2F by the scanner (site 0x2F).
+        const half = Math.random() < 0.5 ? '0' : '1';
+        this.feed(`EDW,${half},17,16312F,SIT-2F`);
     }
 
     private emitPatch() {
-        const patchId = (0x10 + Math.floor(Math.random() * 0x30)).toString(16).toUpperCase();
-        const m1 = pick(PATCH_MEMBERS);
-        let m2 = pick(PATCH_MEMBERS);
-        if (m2 === m1) m2 = pick(PATCH_MEMBERS);
-        this.feed(`EDW PAT-${patchId} MEM-${toHex(m1)}`);
-        if (m2 !== m1) {
-            this.feed(`EDW PAT-${patchId} MEM-${toHex(m2)}`);
-        }
+        // Real patch supergroups + members (decimal AgencyDB ids). The scanner
+        // emits PAT-/MEM- as zero-padded hex; the payload low bytes carry MEM.
+        const grp = pick(EDACS_PATCHES);
+        const mem = pick(grp.m);
+        const memHex = pad4(toHex(mem));
+        const payload = ('00' + memHex).slice(-6);
+        this.feed(`EDW,1,2C,${payload},PAT-${pad4(toHex(grp.p))} MEM-${memHex}`);
     }
 }
 

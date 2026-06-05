@@ -57,9 +57,12 @@ export class ScannerDecoder {
         const patM = line.match(/PAT-([0-9A-Fa-f]+)/);
         const memM = line.match(/MEM-([0-9A-Fa-f]+)/);
         if (patM && memM) {
+            // Validated against live SLERS EDACS: "PAT-004E MEM-0422" → patch 78
+            // (FHP Troop B Patch/Talk) + member 1058 (FHP Troop B Law Tac), both
+            // AgencyDB hits — so BOTH ids are hex and must be converted to decimal.
             return {
                 type: 'PATCH',
-                patchId: patM[1],              // hex label used as patch display ID
+                patchId: hexToDec(patM[1]),    // decimal string → matches AgencyDB key
                 memberId: hexToDec(memM[1]),   // decimal string → matches AgencyDB key
                 raw: line,
                 timestamp
