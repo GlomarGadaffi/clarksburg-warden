@@ -1,6 +1,6 @@
 import { Serial } from './SerialMonitor';
 import type {
-    EDACSEvent, PatchEvent, SiteEvent, GrantEvent, P25Event,
+    EDACSEvent, PatchEvent, SiteEvent, GrantEvent, UnitEvent, P25Event,
     RawLogEntry, LeaderboardEntry, SessionStats
 } from '../types';
 import { DB } from './AgencyDB';
@@ -50,6 +50,8 @@ export class SentinelStore {
     public grants: GrantEvent[] = [];
     public p25Cards: Map<string, P25CardState> = new Map();
     public lcnMap: Map<string, string> = new Map(); // LCN Dec -> VC Dec
+    // EDACS unit/group IDs seen active on the control channel (id -> hits/lastSeen).
+    public unitActivity: Map<string, { hits: number; lastSeen: number }> = new Map();
 
     // Analytics
     public tgHits: Map<string, number[]> = new Map(); // SLERS hits for leaderboard
@@ -221,6 +223,13 @@ export class SentinelStore {
             if (this.grants.length > 200) this.grants.pop();
             this.stats.grants++;
             this.emitChange();
+        } else if (e.type === 'UNIT') {
+            const ue = e as UnitEvent;
+            this.trackSlersHit(ue.id);  // counts toward the activity leaderboard
+            const ex = this.unitActivity.get(ue.id);
+            if (ex) { ex.hits++; ex.lastSeen = e.timestamp; }
+            else { this.unitActivity.set(ue.id, { hits: 1, lastSeen: e.timestamp }); }
+            this.emitChange();
         }
     }
 
@@ -286,6 +295,11 @@ export class SentinelStore {
             if (now - c.lastSeen > 300000 && this.p25HoldingTG !== id) {
                 this.p25Cards.delete(id);
             }
+        }
+
+        // Prune EDACS unit activity (>5 min)
+        for (const [id, u] of this.unitActivity.entries()) {
+            if (now - u.lastSeen > 300000) this.unitActivity.delete(id);
         }
 
         // BUG FIX #2 (partial): prune fully-expired tgHits entries from memory so

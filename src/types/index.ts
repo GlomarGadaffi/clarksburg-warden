@@ -64,8 +64,19 @@ export interface UnknownEDACSEvent extends EDACSEventBase {
   type: 'UNKNOWN';
 }
 
+/**
+ * An EDACS logical ID (group or unit) seen active on the control channel — decoded
+ * from "UN"-tagged OSWs whose payload is a plain LID (no LCN/status in the high
+ * bits). Feeds the activity leaderboard even when no voice channel is followed.
+ */
+export interface UnitEvent extends EDACSEventBase {
+  type: 'UNIT';
+  id: string;          // decimal LID (AgencyDB key)
+  mt: string;          // OSW message-type byte (hex), for diagnostics
+}
+
 /** Discriminated union — exhaustive matching is now possible */
-export type EDACSEvent = SiteEvent | PatchEvent | GrantEvent | UnknownEDACSEvent;
+export type EDACSEvent = SiteEvent | PatchEvent | GrantEvent | UnknownEDACSEvent | UnitEvent;
 
 // ─── P25 / GLG ────────────────────────────────────────────────────────────────
 

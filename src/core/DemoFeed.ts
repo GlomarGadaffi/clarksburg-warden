@@ -40,6 +40,10 @@ const EDACS_PATCHES: { p: string; m: string[] }[] = [
     { p: '230',  m: ['231', '249', '1352'] },           // FHP Turnpike
 ];
 
+// EDACS unit/group LIDs (decimal) that resolve to named FHP groups, for the
+// activity leaderboard demo.
+const EDACS_UNITS = ['835', '870', '1058', '1059', '1154', '832', '801', '578'];
+
 /** Zero-pad a hex token to 4 chars (e.g. "4E" → "004E"). */
 function pad4(hex: string): string {
     return ('0000' + hex).slice(-4);
@@ -78,6 +82,7 @@ export class DemoFeed {
         this.emitSite();
         this.timers.push(window.setInterval(() => this.emitSite(), 3000));
         this.timers.push(window.setInterval(() => this.emitPatch(), 1600));
+        this.timers.push(window.setInterval(() => this.emitUnit(), 700));
     }
 
     stop() {
@@ -140,6 +145,14 @@ export class DemoFeed {
         const memHex = pad4(toHex(mem));
         const payload = ('00' + memHex).slice(-6);
         this.feed(`EDW,1,2C,${payload},PAT-${pad4(toHex(grp.p))} MEM-${memHex}`);
+    }
+
+    private emitUnit() {
+        // UN-tagged unit/group activity OSW (bare LID payload, high byte zero).
+        const lid = pick(EDACS_UNITS);
+        const payload = ('000000' + toHex(lid)).slice(-6);
+        const mt = pick(['0C', '2E', '38']);
+        this.feed(`EDW,1,${mt},${payload},UN,UN`);
     }
 }
 

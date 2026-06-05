@@ -48,6 +48,27 @@ describe('ScannerDecoder.parseEDACS', () => {
             expect(ev?.type).toBe('SITE');
             expect((ev as { siteId: string }).siteId).toBe('2F');
         });
+    });
+
+    describe('UNIT activity', () => {
+        it('decodes a UN-tagged unit/group OSW to a decimal LID', () => {
+            // 0x343 = 835 = FHP Troop A Law Tac (validated against AgencyDB).
+            const ev = ScannerDecoder.parseEDACS('EDW,1,0C,000343,UN,UN') as { type: string; id: string; mt: string };
+            expect(ev.type).toBe('UNIT');
+            expect(ev.id).toBe('835');
+            expect(ev.mt).toBe('0C');
+        });
+
+        it('does NOT treat the system-ID frame as a unit (payload > 0x1FFF)', () => {
+            // 0x7EEB = 32491 is the SLERS system id, not a group LID.
+            const ev = ScannerDecoder.parseEDACS('EDW,0,17,007EEB,UN');
+            expect(ev?.type).toBe('UNKNOWN');
+        });
+
+        it('does NOT treat a call-assignment OSW (non-zero high byte) as a unit', () => {
+            const ev = ScannerDecoder.parseEDACS('EDW,0,16,081777,UN');
+            expect(ev?.type).toBe('UNKNOWN');
+        });
 
         it('requires BOTH PAT- and MEM- to classify as PATCH', () => {
             // PAT- alone (no MEM-) is not a patch; falls through to UNKNOWN.

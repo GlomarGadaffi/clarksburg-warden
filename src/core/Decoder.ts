@@ -1,4 +1,4 @@
-import type { EDACSEvent, PatchEvent, SiteEvent, GrantEvent, P25Event } from '../types';
+import type { EDACSEvent, PatchEvent, SiteEvent, GrantEvent, UnitEvent, P25Event } from '../types';
 
 // ─── Radix Decision ───────────────────────────────────────────────────────────
 // The BCD325P2 EDACS control-channel output (EDW/EDN lines) encodes SIT-, PAT-,
@@ -102,6 +102,33 @@ export class ScannerDecoder {
                     raw: line,
                     timestamp
                 } as GrantEvent;
+            }
+        }
+
+        // ── Unit / group ID activity ────────────────────────────────────────────
+        // Real OSW form: EDW,<half>,<MT>,<24-bit payload>,<tag>[,<tag>]. A "UN"/"PN"
+        // tagged OSW whose payload is a bare LID (high byte zero, value ≤ 0x1FFF)
+        // is a group/unit appearing on the control channel — e.g.
+        // "EDW,1,0C,000343,UN" → 0x343 = 835 (FHP Troop A Law Tac). Site/system
+        // frames (16312F, 007EEB) and call assignments (081777) have larger or
+        // high-byte payloads and are excluded by the range gate.
+        const parts = line.split(',');
+        if (parts[0] === 'EDW' && parts.length >= 5) {
+            const mt = parts[2];
+            const payload = parts[3];
+            const tags = parts.slice(4).map(t => t.trim());
+            const tagged = tags.includes('UN') || tags.includes('PN');
+            if (tagged && /^[0-9A-Fa-f]+$/.test(payload)) {
+                const val = parseInt(payload, 16);
+                if (val > 0 && val <= 0x1FFF) {
+                    return {
+                        type: 'UNIT',
+                        id: val.toString(10),
+                        mt,
+                        raw: line,
+                        timestamp
+                    } as UnitEvent;
+                }
             }
         }
 
