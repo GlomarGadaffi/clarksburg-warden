@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# local docs — read the code
+docs/
+notes/
+*.txt
+LINEAGE.md
+*.old
+*.bak
