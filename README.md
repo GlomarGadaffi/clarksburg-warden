@@ -1,4 +1,4 @@
-# clarksburg-warden
+# bcd325-dashboard
 
 BearSentinel dashboard for RF network telemetry. decodes, visualizes, and persists radio network traffic directly from Uniden hardware (specifically BCD325P2 scanners). two operational modes: **ANALYST** (forensic archive) and **SENTINEL** (real-time alerting).
 
@@ -18,7 +18,7 @@ BearSentinel dashboard for RF network telemetry. decodes, visualizes, and persis
 ## architecture
 
 **data ingest**:
-- serial input from BCD325P2 (structured JSON via tysons-archivist)
+- serial input from BCD325P2 (structured JSON via bcd325-splunk-addon)
 - multiple scanner support (aggregated streams)
 
 **processing**:
@@ -36,8 +36,8 @@ BearSentinel dashboard for RF network telemetry. decodes, visualizes, and persis
 ## integration
 
 consumes output from:
-- **tysons-archivist** (Splunk ingest, or direct stream)
-- **arlington-auditor** (P25 control channel logs)
+- **bcd325-splunk-addon** (Splunk ingest, or direct stream)
+- **p25-trunk-logger** (P25 control channel logs)
 - optionally: external CAD feeds, tactical maps
 
 ## notes
